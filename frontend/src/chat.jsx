@@ -9,6 +9,7 @@ function Chat() {
 	const [currentInstructions, setCurrentInstructions] = useState([]);
 	const [editingIndex, setEditingIndex] = useState(-1);
 	const [editingText, setEditingText] = useState("");
+	const [editingType, setEditingType] = useState("");
 	const [reviewMode, setReviewMode] = useState(false);
 	const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 	const [finalResults, setFinalResults] = useState(null);
@@ -110,6 +111,8 @@ function Chat() {
 	const handleEditInstruction = () => {
 		setEditingIndex(currentReviewIndex);
 		setEditingText(currentInstructions[currentReviewIndex].instruction);
+		setEditingType(currentInstructions[currentReviewIndex].type);
+		
 	};
 
 	const handleUpdateInstruction = () => {
@@ -117,10 +120,12 @@ function Chat() {
 		updatedInstructions[currentReviewIndex] = {
 			...updatedInstructions[currentReviewIndex],
 			instruction: editingText,
+			type: editingType
 		};
 		setCurrentInstructions(updatedInstructions);
 		setEditingIndex(-1);
 		setEditingText("");
+		setEditingType("");
 
 		if (currentReviewIndex < currentInstructions.length - 1) {
 			setCurrentReviewIndex(currentReviewIndex + 1);
@@ -250,7 +255,7 @@ function Chat() {
 								</div>
 							</div>
 
-							<div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-4 shadow-sm">
+							<div className="bg-blue-100 rounded-lg p-4 border border-gray-200 mb-4 shadow-sm">
 								<div className="flex items-center justify-between mb-2">
 									<span className="text-sm font-medium text-gray-600">
 										Step {currentReviewIndex + 1}
@@ -268,6 +273,13 @@ function Chat() {
 											className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
 											rows="3"
 										/>
+										<textarea
+											value={editingType}
+											onChange={(e) => setEditingType(e.target.value)}
+											className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+											rows="1"
+										/>
+
 										<div className="flex space-x-2">
 											<button
 												onClick={handleUpdateInstruction}
