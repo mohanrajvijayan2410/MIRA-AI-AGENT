@@ -1,0 +1,16 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "cd frontend && npm install && cd ../api_agent && pip install -r requirements.txt",
+    "dev": "concurrently \"cd frontend && npm run dev\" \"cd api_agent && python main.py\""
+  },
+  "dependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "https://mrv-llm.streamlit.app/"
+}

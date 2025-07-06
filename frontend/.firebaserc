@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "mira-ai-agent",
+    "first": "mira-ai-agent"
+  },
+  "targets": {},
+  "etags": {}
+}

@@ -1,0 +1,4 @@
+# API keys and model settings
+groq_api_key: "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"      # e.g. gsk_... from .env
+genai_api_key: "AIzaSyAnjiSf8r7kH5oOYkZbQNNhdS4AxxIgYCI"    # Google Generative AI key
+default_model: "gemini-1.5-flash-latest"
