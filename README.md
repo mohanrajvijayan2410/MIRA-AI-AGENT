@@ -243,9 +243,11 @@ Stepwise Instructions with Classification
 
 ### Flowchart
 
-<img src="https://github.com/user-attachments/assets/77128d20-254e-4f53-851f-45cdba7bfde1" 
+<img src="https://github.com/user-attachments/assets/36a0d909-deb8-4a0a-997c-12bc126ecf54" 
      alt="flowchart diagram" 
      width="400px" />
+
+
 
 ### 📊 Dependency Table Example
 
