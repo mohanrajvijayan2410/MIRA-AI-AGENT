@@ -217,6 +217,10 @@ Stepwise Instructions with Classification
    Consistency: Yes
 ```
 
+### Flowchart
+![image](https://github.com/user-attachments/assets/77128d20-254e-4f53-851f-45cdba7bfde1)
+
+
 ### 📊 Dependency Table Example
 
 | Step | Depends On | Objects Involved | Classification          | Consistency |
