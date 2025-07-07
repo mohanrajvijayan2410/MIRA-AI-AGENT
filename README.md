@@ -138,28 +138,8 @@ Valid Actions = {Take OBJ: DUR 1 minute, Heat OBJ: DUR 3 minutes, Wait: DUR 3 mi
 }
 ```
 
-#### Response
-
-```json
-{
-  "recipe": "1. Boil water...\n2. Add pasta...",
-  "metrics": {
-    "AS": 0.95,
-    "CS": 0.98,
-    "TCR": 0.92,
-    "ACT": 0.87
-  }
-}
-```
 
 ---
-
-## 📊 Evaluation Metrics
-
-* **AS (Accuracy Score)**: Correctness of output
-* **CS (Clarity Score)**: How clearly the instructions are presented
-* **TCR (Task Completion Rate)**: Whether the task is completed
-* **ACT (Agent Confidence Threshold)**: Overall confidence of the model
 
 > All scores are auto-generated using the `EvaluationMetrics` module in `mira/init.py`.
 
