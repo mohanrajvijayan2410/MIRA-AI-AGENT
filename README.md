@@ -218,8 +218,10 @@ Stepwise Instructions with Classification
 ```
 
 ### Flowchart
-![image](https://github.com/user-attachments/assets/77128d20-254e-4f53-851f-45cdba7bfde1)
 
+<img src="https://github.com/user-attachments/assets/77128d20-254e-4f53-851f-45cdba7bfde1" 
+     alt="flowchart diagram" 
+     width="400px" />
 
 ### 📊 Dependency Table Example
 
