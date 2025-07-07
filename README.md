@@ -20,6 +20,21 @@ git clone https://github.com/mohanrajvijayan2410/MIRA_AGENT.git
 cd mira_agent
 ```
 
+### 2. Complete Setup 
+
+```bash
+npm install
+```
+
+```bash
+npm run install:all
+```
+
+```bash
+npm run dev
+```
+
+## Optional separate setup
 ### 2. Backend Setup (Python)
 
 ```bash
