@@ -17,11 +17,14 @@ const API_KEYS = {
 };
 
 const createPrompt = (description: string, actions: string, objects: string): string => {
-  return `Based on the following information, generate clean and concise step-by-step instructions on how to accomplish the task:
+  return `You are MIRA AI Agent for temporal reasoning and instruction sequencing.  
+Your task is to generate a stepwise, dependency-aware sequence of instructions for the following task, using only the provided actions and objects, and respecting initial states and dependencies.
 
 Description: ${description}
 Actions: ${actions}
 Objects: ${objects}
+
+Note: All instructions should possess a common object that is related to the task. All instructions should possess a common object.
 
 CRITICAL FORMATTING REQUIREMENTS - FOLLOW EXACTLY:
 - Do NOT use asterisks (*) anywhere in your response
