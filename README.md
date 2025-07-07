@@ -96,20 +96,38 @@ Valid Actions = {Take OBJ: DUR 1 minute, Heat OBJ: DUR 3 minutes, Wait: DUR 3 mi
 ## 🛠️ Project Structure
 
 ```
-/mira
+/MIRA-AI-AGENT
 │
-├── main.py                # Flask backend entry
-├── mira/
-│   ├── agent.py           # LangChain agent logic
-│   ├── prompt_builder.py  # Custom prompt templates
-│   ├── sequencer.py       # Groq & Gemini tool wrappers
-│   ├── init.py            # EvaluationMetrics module
+├── api_agent/
+│   ├── main.py                # Flask backend entry
+│   ├── requirements.txt
+│   └── mira/
+│       ├── agent.py           # LangChain agent logic
+│       ├── init.py            # EvaluationMetrics module
+│       ├── prompt_builder.py  # Custom prompt templates
+│       └── tools.py           # Groq & Gemini tool wrappers
 │
 ├── config/
-│   └── settings.yaml      # Agent config (type etc.)
+│   └── settings.yaml          # Agent config (type etc.)
 │
-├── .env                   # API credentials
-└── frontend/              # Vite + React frontend
+├── dataset/                   # (your dataset folder)
+└── frontend/
+    ├── .firebase/
+    ├── dist/
+    ├── node_modules/
+    ├── public/
+    └── src/
+        ├── components/
+        ├── config/
+        ├── mira/
+        ├── types/
+        ├── utils/
+        ├── App.jsx
+        ├── chat.jsx
+        ├── csv.tsx
+        ├── index.css
+        └── main.jsx
+
 ```
 
 ---
@@ -179,7 +197,41 @@ Stepwise Instructions with Classification
    Dependencies: none
    Consistency: N/A
 
-...
+3. wash dish
+   Required state: dish is dirty
+   Resulting state: dish is clean
+   Type: Simple Instruction
+   Dependencies: none
+   Consistency: N/A
+
+4. cook rice in pot
+   Required state: rice is picked, pot is available
+   Resulting state: rice is cooked, pot is occupied
+   Type: Instruction in Sequence
+   Dependencies: Step 1
+   Consistency: Yes
+
+5. chop beef
+   Required state: beef is picked
+   Resulting state: beef is chopped
+   Type: Instruction with Reason
+   Reason: Prepares beef for frying
+   Dependencies: Step 2
+   Consistency: Yes
+
+6. fry beef in fryer
+   Required state: beef is chopped, fryer is available
+   Resulting state: beef is fried
+   Type: Instruction in Sequence
+   Dependencies: Step 5
+   Consistency: Yes
+
+7. add rice to dish
+   Required state: rice is cooked, dish is clean
+   Resulting state: dish contains rice
+   Type: Instruction in Sequence
+   Dependencies: Steps 3, 4
+   Consistency: Yes
 
 8. add beef to dish
    Required state: beef is fried, dish contains rice
