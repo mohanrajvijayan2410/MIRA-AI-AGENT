@@ -80,13 +80,6 @@ To make a cup of tea, follow these steps:
 Available Objects = {Teapot, Water, Tea leaves, Cup, Condiments}
 Valid Actions = {Take OBJ: DUR 1 minute, Heat OBJ: DUR 3 minutes, Wait: DUR 3 minutes, Pour: DUR 1 minute, Add: DUR 1 minute}
 
-| Metric                        | Value       |
-| ----------------------------- | ----------- |
-| Average Progress Score (AS)   | 1 score     |
-| Completion Speed (CS)         | 1 score/min |
-| Task Completion Rate (TCR)    | 100%        |
-| Average Completion Time (ACT) | 1 min       |
-
 ---
 
 ## 🚀 Features
@@ -95,7 +88,6 @@ Valid Actions = {Take OBJ: DUR 1 minute, Heat OBJ: DUR 3 minutes, Wait: DUR 3 mi
 * 🔁 **Multimodal Tool Invocation** – Supports both Groq & Gemini
 * 🌍 **Multilingual Recipe Generation**
 * 🧠 **Conversational Memory** with contextual prompts
-* 📊 **Real-Time Evaluation Metrics** (AS, CS, TCR, ACT)
 * ⚡ **Modern Frontend** with React, Vite, and Tailwind CSS
 * 🔐 Secure API Keys using `.env`
 
