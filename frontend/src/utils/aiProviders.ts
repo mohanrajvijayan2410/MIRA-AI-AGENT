@@ -103,9 +103,53 @@ Important: All instructions shoudl follow a object and shoudl retaint the object
 - Present a dependency table or graph.
 - Output the final sequenced plan as an ordered list.
 - If actions can be performed in parallel or iteratively, indicate this clearly and optimize for efficiency.
+
+**Output your answer in the format shown above.**
+
+If you encounter any sequence that violates the consistency or dependency condition, explicitly state the issue and provide a corrected sequence.
+
+**Example**
+#### Stepwise Instructions with Classification
+
+1. pick rice  
+   - Required state: rice is unpicked  
+   - Resulting state: rice is picked  
+   - Type: Simple Instruction  
+   - Dependencies: none  
+   - Consistency: N/A
+
+2. cook rice in pot  
+   - Required state: rice is picked, pot is empty  
+   - Resulting state: rice is cooked, pot is occupied  
+   - Type: Instruction in Sequence  
+   - Dependencies: Step 1  
+   - Consistency: Yes (rice: picked → picked)
+
+3. add rice to dish  
+   - Required state: rice is cooked, dish is clean  
+   - Resulting state: dish contains rice  
+   - Type: Instruction in Sequence  
+   - Dependencies: Step 2  
+   - Consistency: Yes (rice: cooked → cooked)
+
+...
+
+#### Dependency Table
+
+| Step | Depends On | Objects Involved | Classification              | Consistency Condition Satisfied? |
+|------|------------|------------------|-----------------------------|-------------------------------|
+| 1    | —          | rice             | Simple Instruction          | —                             |
+| 2    | 1          | rice, pot        | Instruction in Sequence     | Yes                           |
+| 3    | 2          | rice, dish       | Instruction in Sequence     | Yes                           |
+
+#### Final Sequenced Plan
+
+1. pick rice
+2. cook rice in pot
+3. add rice to dish
+...
 `;
 };
-
 const generateWithGroq = async (description: string, actions: string, objects: string): Promise<string> => {
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
