@@ -213,7 +213,278 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ result, hasSearched,
     }
   };
 
+  const getStepTypeColor = (stepType: string) => {
+    const type = stepType.toLowerCase();
+    if (type.includes('simple')) {
+      return 'bg-blue-100 text-blue-700 border-blue-200';
+    } else if (type.includes('goal') || type.includes('purpose')) {
+      return 'bg-purple-100 text-purple-700 border-purple-200';
+    } else if (type.includes('reason')) {
+      return 'bg-green-100 text-green-700 border-green-200';
+    } else if (type.includes('sequence') || type.includes('instruction in sequence')) {
+      return 'bg-indigo-100 text-indigo-700 border-indigo-200';
+    } else if (type.includes('exclusive')) {
+      return 'bg-orange-100 text-orange-700 border-orange-200';
+    } else if (type.includes('mandatory')) {
+      return 'bg-red-100 text-red-700 border-red-200';
+    }
+    return 'bg-gray-100 text-gray-700 border-gray-200';
+  };
+
+  const formatMIRAInstructions = (text: string) => {
+    const sections = text.split('####').filter(section => section.trim());
+    const formattedSections: JSX.Element[] = [];
+
+    sections.forEach((section, index) => {
+      const lines = section.trim().split('\n').filter(line => line.trim());
+      const title = lines[0]?.trim();
+
+      if (title === 'Stepwise Instructions with Classification' || title.includes('Stepwise Instructions')) {
+        // Parse stepwise instructions
+        const steps = parseStepwiseInstructions(lines.slice(1));
+        formattedSections.push(
+          <div key={index} className="space-y-6">
+            <h5 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-orange-600" />
+              Stepwise Instructions with Classification
+            </h5>
+            <div className="space-y-6">
+              {steps}
+            </div>
+          </div>
+        );
+      } else if (title === 'Dependency Table') {
+        // Parse dependency table
+        const dependencyData = parseDependencyTable(lines.slice(1));
+        formattedSections.push(
+          <div key={index} className="space-y-6">
+            <h5 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <Target className="w-5 h-5 text-purple-600" />
+              Dependency Table
+            </h5>
+            <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Step</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Depends On</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Objects Involved</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classification</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Consistency Condition Satisfied?</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {dependencyData.map((row, rowIndex) => (
+                    <tr key={rowIndex} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                            {row.step}
+                          </div>
+                          <span className="text-sm font-medium text-gray-900">{row.step}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.dependsOn}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{row.objects}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`
+                          px-3 py-1 rounded-full text-xs font-medium border
+                          ${getStepTypeColor(row.classification)}
+                        `}>
+                          {row.classification}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`
+                          px-3 py-1 rounded-full text-xs font-medium
+                          ${row.consistency === 'Yes' ? 'bg-green-100 text-green-700' : 
+                            row.consistency === 'No' ? 'bg-red-100 text-red-700' : 
+                            'bg-gray-100 text-gray-700'}
+                        `}>
+                          {row.consistency}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        );
+      } else if (title === 'Final Sequenced Plan') {
+        // Parse final plan
+        const planSteps = parseFinalPlan(lines.slice(1));
+        formattedSections.push(
+          <div key={index} className="space-y-6">
+            <h5 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <BookOpen className="w-5 h-5 text-blue-600" />
+              Final Sequenced Plan
+            </h5>
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <ol className="list-decimal list-inside space-y-2">
+                {planSteps.map((step, stepIndex) => (
+                  <li key={stepIndex} className="text-gray-800 leading-relaxed">
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        );
+      }
+    });
+
+    return (
+      <div className="space-y-8">
+        {formattedSections}
+      </div>
+    );
+  };
+
+  const parseStepwiseInstructions = (lines: string[]) => {
+    const steps: JSX.Element[] = [];
+    let currentStep: any = null;
+    let stepNumber = 0;
+
+    lines.forEach(line => {
+      const trimmedLine = line.trim();
+      
+      if (trimmedLine.match(/^\d+\./)) {
+        // New step
+        if (currentStep) {
+          steps.push(renderStep(currentStep, stepNumber));
+        }
+        stepNumber++;
+        currentStep = {
+          description: trimmedLine.replace(/^\d+\.\s*/, ''),
+          requiredState: '',
+          resultingState: '',
+          type: '',
+          dependencies: '',
+          consistency: '',
+          reason: ''
+        };
+      } else if (trimmedLine.startsWith('Required state:')) {
+        if (currentStep) currentStep.requiredState = trimmedLine.replace('Required state:', '').trim();
+      } else if (trimmedLine.startsWith('Resulting state:')) {
+        if (currentStep) currentStep.resultingState = trimmedLine.replace('Resulting state:', '').trim();
+      } else if (trimmedLine.startsWith('Type:')) {
+        if (currentStep) currentStep.type = trimmedLine.replace('Type:', '').trim();
+      } else if (trimmedLine.startsWith('Dependencies:')) {
+        if (currentStep) currentStep.dependencies = trimmedLine.replace('Dependencies:', '').trim();
+      } else if (trimmedLine.startsWith('Consistency:')) {
+        if (currentStep) currentStep.consistency = trimmedLine.replace('Consistency:', '').trim();
+      } else if (trimmedLine.startsWith('Reason:')) {
+        if (currentStep) currentStep.reason = trimmedLine.replace('Reason:', '').trim();
+      }
+    });
+
+    // Add the last step
+    if (currentStep) {
+      steps.push(renderStep(currentStep, stepNumber));
+    }
+
+    return steps;
+  };
+
+  const renderStep = (step: any, stepNumber: number) => {
+    return (
+      <div key={stepNumber} className="bg-white rounded-lg border border-gray-200 p-6">
+        <div className="flex gap-4 mb-4">
+          <div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+            {stepNumber}
+          </div>
+          <div className="flex-1">
+            <h6 className="font-semibold text-gray-900 mb-2">{step.description}</h6>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4">
+          <div>
+            <span className="font-medium text-gray-700">Required State:</span>
+            <p className="text-gray-600 mt-1">{step.requiredState || 'N/A'}</p>
+          </div>
+          <div>
+            <span className="font-medium text-gray-700">Resulting State:</span>
+            <p className="text-gray-600 mt-1">{step.resultingState || 'N/A'}</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+          <div>
+            <span className="font-medium text-gray-700">Dependencies:</span>
+            <p className="text-gray-600 mt-1">{step.dependencies || 'None'}</p>
+          </div>
+          {step.reason && (
+            <div>
+              <span className="font-medium text-gray-700">Reason:</span>
+              <p className="text-gray-600 mt-1">{step.reason}</p>
+            </div>
+          )}
+        </div>
+        
+        <div className="flex items-center gap-4 mt-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <Tag className="w-4 h-4 text-gray-500" />
+            <span className={`
+              px-3 py-1 rounded-full text-xs font-medium border
+              ${getStepTypeColor(step.type)}
+            `}>
+              {step.type}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium text-gray-700">Consistency:</span>
+            <span className={`
+              px-2 py-1 rounded-full text-xs font-medium
+              ${step.consistency === 'Yes' ? 'bg-green-100 text-green-700' : 
+                step.consistency === 'No' ? 'bg-red-100 text-red-700' : 
+                'bg-gray-100 text-gray-700'}
+            `}>
+              {step.consistency || 'N/A'}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const parseDependencyTable = (lines: string[]) => {
+    const dependencies: any[] = [];
+    
+    lines.forEach(line => {
+      const trimmedLine = line.trim();
+      if (trimmedLine.startsWith('|') && !trimmedLine.includes('Step') && !trimmedLine.includes('---')) {
+        const columns = trimmedLine.split('|').map(col => col.trim()).filter(col => col);
+        if (columns.length >= 5) {
+          dependencies.push({
+            step: columns[0],
+            dependsOn: columns[1] === '—' ? 'None' : columns[1],
+            objects: columns[2],
+            classification: columns[3],
+            consistency: columns[4] === '—' ? 'N/A' : columns[4]
+          });
+        }
+      }
+    });
+    
+    return dependencies;
+  };
+
+  const parseFinalPlan = (lines: string[]) => {
+    return lines
+      .filter(line => line.trim().match(/^\d+\./))
+      .map(line => line.trim().replace(/^\d+\.\s*/, ''));
+  };
+
   const formatInstructions = (text: string) => {
+    // Check if the text contains the new MIRA format
+    if (text.includes('#### Stepwise Instructions') || text.includes('#### Dependency Table')) {
+      return formatMIRAInstructions(text);
+    }
+
+    // Fallback to old format parsing
     const lines = text.split('\n').filter(line => line.trim());
     const formattedSteps: JSX.Element[] = [];
     let stepNumber = 0;
@@ -268,9 +539,12 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ result, hasSearched,
                   )}
                 </div>
                 {instructionType && (
-                  <p className="text-sm text-gray-600 font-medium break-words">
-                    Type: {instructionType}
-                  </p>
+                  <span className={`
+                    px-3 py-1 rounded-full text-xs font-medium border
+                    ${getStepTypeColor(instructionType)}
+                  `}>
+                    {instructionType}
+                  </span>
                 )}
               </div>
             </div>
@@ -330,7 +604,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ result, hasSearched,
       {/* Instructions Section */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="bg-gradient-to-r from-orange-600 to-orange-700 px-6 py-4">
-          <h3 className="text-xl font-semibold text-white">Instructions</h3>
+          <h3 className="text-xl font-semibold text-white">MIRA Protocol Instructions</h3>
         </div>
 
         <div className="p-6 bg-gradient-to-br from-orange-50 to-yellow-50">
@@ -369,9 +643,9 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ result, hasSearched,
                 <div className="flex items-center gap-3 py-8">
                   <Loader2 className="w-6 h-6 text-orange-600 animate-spin flex-shrink-0" />
                   <div className="min-w-0">
-                    <p className="text-orange-700 font-medium">Generating instructions...</p>
+                    <p className="text-orange-700 font-medium">Generating MIRA instructions...</p>
                     <p className="text-sm text-orange-600">
-                      AI is analyzing the task details and creating step types
+                      AI is analyzing task details, dependencies, and creating classified steps
                     </p>
                   </div>
                 </div>
@@ -397,9 +671,40 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ result, hasSearched,
 
               {/* Scrollable Instructions Area */}
               {instructions && !isGeneratingInstructions && !instructionsError && (
-                <div className="bg-white rounded-lg border border-orange-200 max-h-[350px] overflow-y-auto">
+                <div className="bg-white rounded-lg border border-orange-200 max-h-[500px] overflow-y-auto">
                   <div className="p-6 space-y-4">
                     {formatInstructions(instructions)}
+                  </div>
+                  
+                  {/* Step Type Legend - Fixed at bottom */}
+                  <div className="sticky bottom-0 bg-white border-t border-gray-200 p-4">
+                    <h5 className="text-sm font-medium text-gray-700 mb-3">MIRA Protocol Types:</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-100 border border-blue-200 rounded"></div>
+                        <span className="text-gray-600">Simple Instruction</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-purple-100 border border-purple-200 rounded"></div>
+                        <span className="text-gray-600">Instruction with Goal</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-green-100 border border-green-200 rounded"></div>
+                        <span className="text-gray-600">Instruction with Reason</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-indigo-100 border border-indigo-200 rounded"></div>
+                        <span className="text-gray-600">Instruction with Sequence</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-orange-100 border border-orange-200 rounded"></div>
+                        <span className="text-gray-600">Exclusive Instruction</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-red-100 border border-red-200 rounded"></div>
+                        <span className="text-gray-600">Mandatory Instruction</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}

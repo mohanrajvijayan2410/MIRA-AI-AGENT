@@ -1,6 +1,7 @@
 import React from "react";
 import Chat from "./chat";
 import CSV from "./csv";
+import Iterative from "./iterative";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Bot } from "lucide-react";
@@ -24,7 +25,7 @@ function App() {
 						</div>
 
 						{/* Nav Links */}
-						<div className="flex gap-10">
+						<div className="flex gap-5">
 						
 							<Link
 								to="/"
@@ -36,7 +37,13 @@ function App() {
 								to="/upload"
 								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
 							>
-								Upload CSV and Analyze
+								Upload CSV
+							</Link>
+								<Link
+								to="/iterative"
+								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+							>
+								Iterative Method
 							</Link>
 						</div>
 					</div>
@@ -45,6 +52,7 @@ function App() {
 			<Routes>
 				<Route path="/upload" element={<CSV />} />
 				<Route path="/" element={<Chat />} />
+				<Route path="/iterative" element={<Iterative />} />
 			</Routes>
 		</Router>
 	);

@@ -17,41 +17,13 @@ const API_KEYS = {
 };
 
 const createPrompt = (description: string, actions: string, objects: string): string => {
-  return `You are MIRA AI Agent for temporal reasoning and instruction sequencing.  
-Your task is to generate a stepwise, dependency-aware sequence of instructions for the following task, using only the provided actions and objects, and respecting initial states and dependencies.
+  return `Based on the following information, generate clean and concise step-by-step instructions on how to accomplish the task:
 
 Description: ${description}
 Actions: ${actions}
 Objects: ${objects}
 
-Note: All instructions should possess a common object that is related to the task. All instructions should possess a common object.
-
-CRITICAL FORMATTING REQUIREMENTS - FOLLOW EXACTLY:
-- Do NOT use asterisks (*) anywhere in your response
-- Generate 5 to 7 steps total
-- Each step MUST be on a single line with this EXACT format:
-  "1. [Concise step description]: DUR [time estimate] Type: [instruction type]"
-- Keep each step concise but informative - include key details without being overly verbose
-- Instruction types MUST be either "Simple Instruction" or "Instruction with Reason"
-- Use "Simple Instruction" for basic steps
-- Use "Instruction with Reason" for steps that include explanation or important details
-- Provide realistic time estimates for each step
-- Use clear, concise language
-- Focus on practical implementation
-
-EXACT FORMAT EXAMPLE - COPY THIS STRUCTURE:
-1. Gather teapot, water, tea leaves, and heating source: DUR 2 minutes Type: Simple Instruction
-2. Fill teapot with fresh cold water: DUR 1 minute Type: Simple Instruction
-3. Heat water on stovetop until boiling: DUR 5 minutes Type: Simple Instruction
-4. Pour boiling water into clean teapot: DUR 1 minute Type: Simple Instruction
-5. Add tea leaves to hot water: DUR 1 minute Type: Simple Instruction
-6. Let tea steep for 3-5 minutes: DUR 4 minutes Type: Instruction with Reason
-7. Strain tea leaves from liquid: DUR 1 minute Type: Simple Instruction
-8. Pour tea into cups and serve: DUR 2 minutes Type: Simple Instruction
-
 Use the following MIRA protocol.
-
-Important: All instructions shoudl follow a object and shoudl retaint the object in all the intructions
 
 **MIRA Protocol:**  
 - Each instruction must specify action and object(s).
@@ -72,67 +44,169 @@ Important: All instructions shoudl follow a object and shoudl retaint the object
       • Take pen if you have the intention of writing
       → TYPE: INSTRUCTION WITH PURPOSE
 
-    3. EXCLUSIVE INSTRUCTION (OBJECTS):
+    3. INSTRUCTION WITH REASON:
+    - Include explanation or reasoning behind the action.
+    - Examples:
+      • Heat water to 100°C because it ensures proper sterilization
+      • Stir mixture slowly to prevent lumps from forming
+      → TYPE: INSTRUCTION WITH REASON
+    3. INSTRUCTION WITH REASON:
+    - Include explanation or reasoning behind the action.
+    - Examples:
+      • Heat water to 100°C because it ensures proper sterilization
+      • Stir mixture slowly to prevent lumps from forming
+      → TYPE: INSTRUCTION WITH REASON
+
+    4. EXCLUSIVE INSTRUCTION (OBJECTS):
     - Multiple objects given, only one to be chosen.
     - Example:
       • Take pen or pencil
       → TYPE: EXCLUSIVE INSTRUCTION
 
-    4. EXCLUSIVE INSTRUCTION (ACTIONS):
-    - Use ‘or’ between alternative actions.
+    5. EXCLUSIVE INSTRUCTION (ACTIONS):
+    - Use 'or' between alternative actions.
     - Example:
       • Go by walk or take a car to reach destination
       → TYPE: EXCLUSIVE INSTRUCTION
 
-    5. INSTRUCTION WITH SEQUENCE:
-    - If two actions must be performed in order, use “then”.
-    - Do NOT use “and”.
+    6. INSTRUCTION WITH SEQUENCE:
+    - If two actions must be performed in order, use "then".
+    - Do NOT use "and".
     - Example:
       • Take pen then write
       → TYPE: INSTRUCTION WITH SEQUENCE
 
-    6. MANDATORY INSTRUCTION:
+    7. MANDATORY INSTRUCTION:
     - Both actions must be performed, order does not matter.
     - Examples:
       • Take pen and paper → TYPE: MANDATORY INSTRUCTION
       • Write test and be calm → TYPE: MANDATORY INSTRUCTION
-
 
 - For every pair of dependent instructions (i_j, i_{j+1}), ensure there exists at least one object o^* such that o^* ∈ O_j ∩ O_{j+1} and s_j(o^*) = s_{j+1}^{req}(o^*). If not, revise the sequence.
 - Map and explain dependencies between instructions, referencing objects and their states.
 - Present a dependency table or graph.
 - Output the final sequenced plan as an ordered list.
 - If actions can be performed in parallel or iteratively, indicate this clearly and optimize for efficiency.
+**Additionally, choose and apply one of the following sequencing methods as appropriate:**
 
-**Output your answer in the format shown above.**
+- **Sequential Completion Method:**  
+  For each object, perform the full sequence of actions before moving to the next object.  
+  For each object (e.g., shirt1, towel2), perform the entire sequence of required actions from start to finish before moving to the next object. This method mimics real-world scenarios where objects are processed one-by-one to completion.
+  Object Processing Order:
+  shirt1 → shirt2 → shirt3 → shirt4 → shirt5 → towel1 → towel2 → towel3 → towel4 → towel5
+
+  *Formula:*  
+  \\[
+  (a_1, o_j) \\rightarrow_i (a_2, o_j) \\rightarrow_i \\ldots \\rightarrow_i (a_n, o_j)
+  \\]  
+  *Example:* wash cup1 → scrub cup1 → rinse cup1; then repeat for cup2, cup3, etc.
+
+- **Step-by-Step Parallel (Iterative) Method:**  
+  For each action, perform it on all objects before moving to the next action.
+  *Formula:*  
+  \\[
+  (a_k, o_1) \\rightarrow_i (a_k, o_2) \\rightarrow_i \\ldots \\rightarrow_i (a_k, o_N)
+  \\]  
+  *Example:* wash cup1, wash cup2, wash cup3; then scrub cup1, scrub cup2, scrub cup3; etc.
 
 If you encounter any sequence that violates the consistency or dependency condition, explicitly state the issue and provide a corrected sequence.
+
+**CRITICAL OUTPUT FORMAT - FOLLOW EXACTLY:**
+
+#### Stepwise Instructions with Classification
+
+1. [action description]
+   Required state: [object states needed]
+   Resulting state: [object states after action]
+   Type: [instruction type]
+   Dependencies: [step numbers or "none"]
+   Consistency: [Yes/No/N/A]
+
+2. [action description]
+   Required state: [object states needed]
+   Resulting state: [object states after action]
+   Type: [instruction type]
+   Dependencies: [step numbers or "none"]
+   Consistency: [Yes/No/N/A]
+
+[Continue for all steps...]
+
+#### Dependency Table
+
+| Step | Depends On | Objects Involved | Classification              | Consistency Condition Satisfied? |
+|------|------------|------------------|-----------------------------|-------------------------------|
+| 1    | —          | [objects]        | [type]                      | —                             |
+| 2    | [steps]    | [objects]        | [type]                      | [Yes/No]                      |
+| 3    | [steps]    | [objects]        | [type]                      | [Yes/No]                      |
+
+#### Final Sequenced Plan
+
+1. [step description]
+2. [step description]
+3. [step description]
+[Continue for all steps...]
 
 **Example**
 #### Stepwise Instructions with Classification
 
-1. pick rice  
-   - Required state: rice is unpicked  
-   - Resulting state: rice is picked  
-   - Type: Simple Instruction  
-   - Dependencies: none  
-   - Consistency: N/A
+description used - Make a dish of beef fried rice, which consists of cooked rice and fried beef.
 
-2. cook rice in pot  
-   - Required state: rice is picked, pot is empty  
-   - Resulting state: rice is cooked, pot is occupied  
-   - Type: Instruction in Sequence  
-   - Dependencies: Step 1  
-   - Consistency: Yes (rice: picked → picked)
+1. pick rice
+   Required state: rice is available
+   Resulting state: rice is picked
+   Type: Simple Instruction
+   Dependencies: none
+   Consistency: N/A
 
-3. add rice to dish  
-   - Required state: rice is cooked, dish is clean  
-   - Resulting state: dish contains rice  
-   - Type: Instruction in Sequence  
-   - Dependencies: Step 2  
-   - Consistency: Yes (rice: cooked → cooked)
+2. pick beef
+   Required state: beef is available
+   Resulting state: beef is picked
+   Type: Simple Instruction
+   Dependencies: none
+   Consistency: N/A
 
-...
+3. wash dish
+   Required state: dish is dirty
+   Resulting state: dish is clean
+   Type: Simple Instruction
+   Dependencies: none
+   Consistency: N/A
+
+4. cook rice in pot
+   Required state: rice is picked, pot is available
+   Resulting state: rice is cooked, pot is occupied
+   Type: Instruction in Sequence
+   Dependencies: Step 1
+   Consistency: Yes
+
+5. chop beef
+   Required state: beef is picked
+   Resulting state: beef is chopped
+   Type: Instruction with Reason
+   Reason: Prepares beef for frying
+   Dependencies: Step 2
+   Consistency: Yes
+
+6. fry beef in fryer
+   Required state: beef is chopped, fryer is available
+   Resulting state: beef is fried
+   Type: Instruction in Sequence
+   Dependencies: Step 5
+   Consistency: Yes
+
+7. add rice to dish
+   Required state: rice is cooked, dish is clean
+   Resulting state: dish contains rice
+   Type: Instruction in Sequence
+   Dependencies: Steps 3, 4
+   Consistency: Yes
+
+8. add beef to dish
+   Required state: beef is fried, dish contains rice
+   Resulting state: dish contains beef and rice (beef fried rice)
+   Type: Instruction in Sequence
+   Dependencies: Steps 6, 7
+   Consistency: Yes
 
 #### Dependency Table
 
@@ -148,8 +222,13 @@ If you encounter any sequence that violates the consistency or dependency condit
 2. cook rice in pot
 3. add rice to dish
 ...
-`;
+- If actions can be performed in parallel or iteratively, indicate this clearly and optimize for efficiency.
+
+**Output your answer in the format shown above.**
+
+Generate 5 to 8 steps total. Make step with descriptions clear and actionable while following the exact format shown in the example.`;
 };
+
 const generateWithGroq = async (description: string, actions: string, objects: string): Promise<string> => {
   const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -162,14 +241,14 @@ const generateWithGroq = async (description: string, actions: string, objects: s
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful assistant that creates clear, step-by-step instructions for tasks. Always follow the exact formatting requirements provided by the user. Never use asterisks (*) in your responses. Each step must include duration estimates and instruction types (Simple Instruction or Instruction with Reason).'
+          content: 'You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.'
         },
         {
           role: 'user',
           content: createPrompt(description, actions, objects)
         }
       ],
-      max_tokens: 1200,
+      max_tokens: 1500,
       temperature: 0.7,
     }),
   });
@@ -196,14 +275,14 @@ const generateWithGemini = async (description: string, actions: string, objects:
     body: JSON.stringify({
       contents: [{
         parts: [{
-          text: `You are a helpful assistant that creates clear, step-by-step instructions for tasks. Always follow the exact formatting requirements provided by the user. Never use asterisks (*) in your responses. Each step must include duration estimates and instruction types (Simple Instruction or Instruction with Reason).
+          text: `You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.
 
 ${createPrompt(description, actions, objects)}`
         }]
       }],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 1200,
+        maxOutputTokens: 1500,
       }
     }),
   });
@@ -233,14 +312,14 @@ const generateWithMistral = async (description: string, actions: string, objects
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful assistant that creates clear, step-by-step instructions for tasks. Always follow the exact formatting requirements provided by the user. Never use asterisks (*) in your responses. Each step must include duration estimates and instruction types (Simple Instruction or Instruction with Reason).'
+          content: 'You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.'
         },
         {
           role: 'user',
           content: createPrompt(description, actions, objects)
         }
       ],
-      max_tokens: 1200,
+      max_tokens: 1500,
       temperature: 0.7,
     }),
   });
@@ -270,14 +349,14 @@ const generateWithTogether = async (description: string, actions: string, object
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful assistant that creates clear, step-by-step instructions for tasks. Always follow the exact formatting requirements provided by the user. Never use asterisks (*) in your responses. Each step must include duration estimates and instruction types (Simple Instruction or Instruction with Reason).'
+          content: 'You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.'
         },
         {
           role: 'user',
           content: createPrompt(description, actions, objects)
         }
       ],
-      max_tokens: 1200,
+      max_tokens: 1500,
       temperature: 0.7,
     }),
   });
@@ -307,14 +386,14 @@ const generateWithDeepSeek = async (description: string, actions: string, object
       messages: [
         {
           role: 'system',
-          content: 'You are a helpful assistant that creates clear, step-by-step instructions for tasks. Always follow the exact formatting requirements provided by the user. Never use asterisks (*) in your responses. Each step must include duration estimates and instruction types (Simple Instruction or Instruction with Reason).'
+          content: 'You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.'
         },
         {
           role: 'user',
           content: createPrompt(description, actions, objects)
         }
       ],
-      max_tokens: 1200,
+      max_tokens: 1500,
       temperature: 0.7,
     }),
   });
@@ -427,7 +506,7 @@ export const generateInstructions = async (
   }
 };
 
-export const  AI_PROVIDERS = [
+export const AI_PROVIDERS = [
   {
     id: 'groq' as AIProvider,
     name: 'Groq',

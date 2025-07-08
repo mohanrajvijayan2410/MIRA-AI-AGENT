@@ -6,7 +6,7 @@ import { ResultsTable, TaskDetails } from './components/ResultsTable';
 import { CSVSearcher } from './utils/searchUtils';
 import { CSVRow, SearchResult } from './types';
 
-function CSV() {
+function csv() {
   const [csvData, setCsvData] = useState<CSVRow[]>([]);
   const [searcher, setSearcher] = useState<CSVSearcher | null>(null);
   const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
@@ -82,8 +82,8 @@ function CSV() {
   }, [searchResult, generateDuration]);
 
   return (
-    <div className="min-h-90 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-    
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+ 
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-2 md:px-4 py-4 md:py-8">
@@ -138,11 +138,12 @@ function CSV() {
               <div className="text-center py-16">
                 <div className="w-full max-w-sm ml-9 text-left">
                   <div className="w-16 h-16 bg-gray-00 rounded-full flex items-center justify-center mx-auto">
-                    <Database className="w-8 h-8 text-gray-400" />
+                    {/* <Database className="w-8 h-8 text-gray-400" /> */}
                   </div>
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Get started by uploading your CSV
-                  </h3>
+                  <h3 className="text-2xl font-medium text-gray-900 -ml-5 -mt-2">
+  Get started by uploading your CSV
+</h3>
+
                   <p className="text-gray-600">
                   </p>
                 </div>
@@ -164,4 +165,4 @@ function CSV() {
   );
 }
 
-export default CSV;
+export default csv;

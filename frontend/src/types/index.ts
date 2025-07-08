@@ -61,10 +61,30 @@ export interface DeepSeekResponse {
   }>;
 }
 
-export type AIProvider = 'groq' | 'gemini' | 'mistral' | 'together' | 'deepseek';
 
 export interface AIProviderOption {
   id: AIProvider;
   name: string;
   description: string;
+}
+
+export interface AIProvider {
+  id: string;
+  name: string;
+  apiKey: string;
+  endpoint: string;
+}
+
+export interface TaskPlan {
+  content: string;
+  timestamp: Date;
+  provider: string;
+  method: string;
+}
+
+export type SequencingMethod = 'sequential' | 'parallel';
+
+export interface ComparisonResult {
+  sequential: string;
+  parallel: string;
 }
