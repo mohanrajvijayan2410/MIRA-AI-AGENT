@@ -20,7 +20,7 @@ async function run(prompt, language, model) {
     }
     
     const refineData = await refineResponse.json();
-    console.log("API Response:", refineData);
+    // console.log("API Response:", refineData);
     
     if (!refineData.recipe) {
       throw new Error("No recipe data in response");
@@ -30,7 +30,7 @@ async function run(prompt, language, model) {
     const returningData  = {
       recipe: { ...recipe, metrics },
     };
-    console.log(returningData)
+    // console.log(returningData)
 
     return returningData.recipe;
 

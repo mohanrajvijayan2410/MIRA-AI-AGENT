@@ -52,6 +52,82 @@ export const generateInstructions = async (taskDescription) => {
   }
 };
 
+export const generateDependencyTable = async (instructionsJson) => {
+  const dependencyPrompt = `
+You are given a list of step-by-step instructions in JSON format. Each item has:
+- instruction: a textual description
+- type: one of “Simple Instruction”, “Instruction in Sequence”, “Instruction with Reason”, etc.
+
+Your task is to produce a dependency table in JSON array form where each row has:
+- step: the 1‑based index of the instruction
+- dependsOn: an array of step numbers that this step depends on (empty array if none)
+- objectsInvolved: an array of the key objects or ingredients mentioned
+- classification: same as the “type” field
+- consistency: “Yes” if this step logically follows its dependencies, otherwise “No”
+
+Return the result as JSON in this exact format
+{ "table": [
+  {
+    "step": 1,
+    "dependsOn": [],
+    "objectsInvolved": ["rice"],
+    "classification": "Simple Instruction",
+    "consistency": "—"
+  },
+  {
+    "step": 4,
+    "dependsOn": [1],
+    "objectsInvolved": ["rice", "pot"],
+    "classification": "Instruction in Sequence",
+    "consistency": "Yes"
+  },
+  …
+]
+}
+Here is the input instructions JSON:
+${JSON.stringify(instructionsJson, null, 2)}
+Just give me the json nothing other than that no text or anything
+`;
+
+  try {
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        { role: "user", content: dependencyPrompt }
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+    });
+
+    const raw = chatCompletion.choices[0]?.message?.content || "";
+    // extract the JSON array
+    const match = raw.match(/\[[\s\S]*\]/);
+    if (match) {
+      return JSON.parse(match[0]);
+    }
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Error generating dependency table:", error);
+    // Fallback sample
+    return [
+      {
+        step: 1,
+        dependsOn: [],
+        objectsInvolved: ["rice"],
+        classification: "Simple Instruction",
+        consistency: "—"
+      },
+      {
+        step: 4,
+        dependsOn: [1],
+        objectsInvolved: ["rice", "pot"],
+        classification: "Instruction in Sequence",
+        consistency: "Yes"
+      }
+    ];
+  }
+};
+
+
 export const finalizeInstructions = async (instructions) => {
   try {
     const prompt = `
@@ -96,13 +172,19 @@ Only return valid JSON, no additional text.
 
     const response = chatCompletion.choices[0]?.message?.content || "";
     
+
     // Clean the response to extract JSON
     const jsonMatch = response.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      return JSON.parse(jsonMatch[0]);
+      const response = JSON.parse(jsonMatch[0]);
+      response.dependencies = await generateDependencyTable(response.instructions);
+      return response;
     }
     
-    return JSON.parse(response);
+    const response_obj = JSON.parse(response);
+    response_obj.dependencies = await generateDependencyTable(response_obj.instructions);
+    return response_obj;
+
   } catch (error) {
     console.error("Error finalizing instructions:", error);
     

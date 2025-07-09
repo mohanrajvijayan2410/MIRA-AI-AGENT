@@ -62,6 +62,7 @@ Please generate the step-by-step instructions for ${taskName} and return the res
   }
 ]
 
+
 Only return valid JSON, no additional text or formatting.
 `;
 };

@@ -13,6 +13,7 @@ function Chat() {
 	const [reviewMode, setReviewMode] = useState(false);
 	const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
 	const [finalResults, setFinalResults] = useState(null);
+	const [dependencies, setDependencies] = useState([]);
 	const messagesEndRef = useRef(null);
 
 	const groqModels = [
@@ -112,7 +113,6 @@ function Chat() {
 		setEditingIndex(currentReviewIndex);
 		setEditingText(currentInstructions[currentReviewIndex].instruction);
 		setEditingType(currentInstructions[currentReviewIndex].type);
-		
 	};
 
 	const handleUpdateInstruction = () => {
@@ -120,7 +120,7 @@ function Chat() {
 		updatedInstructions[currentReviewIndex] = {
 			...updatedInstructions[currentReviewIndex],
 			instruction: editingText,
-			type: editingType
+			type: editingType,
 		};
 		setCurrentInstructions(updatedInstructions);
 		setEditingIndex(-1);
@@ -142,6 +142,8 @@ function Chat() {
 		try {
 			const results = await finalizeInstructions(currentInstructions);
 			setFinalResults(results);
+			setDependencies(results.dependencies);
+			// console.log(results);
 
 			const finalMessage = {
 				id: Date.now(),
@@ -356,7 +358,42 @@ function Chat() {
 							</div>
 
 							{/* Metrics Table */}
-
+							<div className="overflow-x-auto">
+								<table className="min-w-full table-auto border-collapse">
+									<thead>
+										<tr className="bg-gray-100">
+											<th className="px-4 py-2 text-left">Step</th>
+											<th className="px-4 py-2 text-left">Depends On</th>
+											<th className="px-4 py-2 text-left">Objects Involved</th>
+											<th className="px-4 py-2 text-left">Classification</th>
+											<th className="px-4 py-2 text-left">Consistency</th>
+										</tr>
+									</thead>
+									<tbody>
+										{dependencies.map(
+											({
+												step,
+												dependsOn,
+												objectsInvolved,
+												classification,
+												consistency,
+											}) => (
+												<tr key={step} className="border-t hover:bg-gray-50">
+													<td className="px-4 py-2">{step}</td>
+													<td className="px-4 py-2">
+														{dependsOn.length > 0 ? dependsOn.join(", ") : "—"}
+													</td>
+													<td className="px-4 py-2">
+														{objectsInvolved.join(", ")}
+													</td>
+													<td className="px-4 py-2">{classification}</td>
+													<td className="px-4 py-2">{consistency}</td>
+												</tr>
+											)
+										)}
+									</tbody>
+								</table>
+							</div>
 							{/* Actions and Objects */}
 							<div className="grid md:grid-cols-2 gap-6">
 								<div>
