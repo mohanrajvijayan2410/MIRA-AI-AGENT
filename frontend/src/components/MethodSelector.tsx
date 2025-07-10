@@ -11,28 +11,27 @@ export const MethodSelector: React.FC<MethodSelectorProps> = ({ value, onChange 
   const methods = [
     {
       id: 'sequential' as SequencingMethod,
-      name: 'Sequential Completion',
-     
+      name: 'Sequential Method',
+      description: 'Complete each object\'s full process before starting the next object',
       icon: ArrowRight
     },
     {
       id: 'parallel' as SequencingMethod,
-      name: 'Step-by-Step Parallel',
-      
+      name: 'Step-by-Step Parallel Method',
+      description: 'Group all similar actions together for parallel execution',
       icon: Shuffle
     },
     {
       id: 'both' as const,
-      name: 'Compare Both Methods',
+      name: 'Feature Comparison',
+      description: 'Compare both sequential and parallel methods side by side',
       icon: GitCompare
     }
   ];
 
   return (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-gray-700 block">
-        Sequencing Method
-      </label>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {methods.map((method) => {
           const Icon = method.icon;

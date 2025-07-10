@@ -203,7 +203,7 @@ export const ComparisonTable: React.FC<ComparisonTableProps> = ({ comparisonResu
             <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
               <Shuffle className="w-4 h-4 text-white" />
             </div>
-            <h3 className="text-base sm:text-lg font-semibold text-purple-800">Step-by-Step Parallel</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-purple-800">Step-by-Step Parallel Method</h3>
           </div>
           <p className="text-sm text-purple-700 mb-4">Group similar actions together for parallel execution</p>
           

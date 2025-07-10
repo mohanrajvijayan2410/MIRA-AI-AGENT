@@ -115,6 +115,41 @@ If you encounter any sequence that violates the consistency or dependency condit
    - Dependencies: Step 2  
    - Consistency: Yes (rice: cooked → cooked)
 
+4. cook rice in pot
+   Required state: rice is picked, pot is available
+   Resulting state: rice is cooked, pot is occupied
+   Type: Instruction in Sequence
+   Dependencies: Step 1
+   Consistency: Yes
+
+5. chop beef
+   Required state: beef is picked
+   Resulting state: beef is chopped
+   Type: Instruction with Reason
+   Reason: Prepares beef for frying
+   Dependencies: Step 2
+   Consistency: Yes
+
+6. fry beef in fryer
+   Required state: beef is chopped, fryer is available
+   Resulting state: beef is fried
+   Type: Instruction in Sequence
+   Dependencies: Step 5
+   Consistency: Yes
+
+7. add rice to dish
+   Required state: rice is cooked, dish is clean
+   Resulting state: dish contains rice
+   Type: Instruction in Sequence
+   Dependencies: Steps 3, 4
+   Consistency: Yes
+
+8. add beef to dish
+   Required state: beef is fried, dish contains rice
+   Resulting state: dish contains beef and rice (beef fried rice)
+   Type: Instruction in Sequence
+   Dependencies: Steps 6, 7
+   Consistency: Yes
 ...
 
 #### Dependency Table

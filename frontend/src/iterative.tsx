@@ -2,56 +2,45 @@ import React, { useState } from 'react';
 import { Brain, Sparkles } from 'lucide-react';
 import { TaskInput } from './components/TaskInput';
 import { MethodSelector } from './components/MethodSelector';
-import { ApiSelector } from './components/ApiSelector';
 import { GenerateButton } from './components/GenerateButton';
 import { OutputDisplay } from './components/OutputDisplay';
-import { ApiService } from './services/apiService';
-import { createPrompt } from './services/promptService';
-import { AI_PROVIDERS } from './config/aiProviders';
-import { SequencingMethod, ComparisonResult } from './types';
+import { IterativeService } from './services/iterativeService';
+import { SequencingMethod, ComparisonResult, IterativeMethodResponse } from './types';
+import { SequentialMethodResponse, ParallelMethodResponse } from './services/iterativeService';
 
-const apiService = new ApiService();
+const iterativeService = new IterativeService();
+
 
 function App() {
   const [task, setTask] = useState('');
   const [method, setMethod] = useState<SequencingMethod | 'both'>('sequential');
-  const [selectedProvider, setSelectedProvider] = useState('');
-  const [generatedPlan, setGeneratedPlan] = useState('');
+  const [iterativeResponse, setIterativeResponse] = useState<IterativeMethodResponse | null>(null);
   const [comparisonResult, setComparisonResult] = useState<ComparisonResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleGeneratePlan = async () => {
-    if (!task.trim() || !selectedProvider) return;
+    if (!task.trim()) return;
 
     setLoading(true);
     setError(null);
     setComparisonResult(null);
+    setIterativeResponse(null);
 
     try {
-      const provider = AI_PROVIDERS.find(p => p.id === 'groq');
-      if (!provider) {
-        throw new Error('Selected provider not found');
-      }
-
       if (method === 'both') {
-        const sequentialPrompt = createPrompt(task, 'sequential');
-        const parallelPrompt = createPrompt(task, 'parallel');
-
-        const [sequentialPlan, parallelPlan] = await Promise.all([
-          apiService.generatePlan(provider, sequentialPrompt),
-          apiService.generatePlan(provider, parallelPrompt)
-        ]);
-
-        setComparisonResult({
-          sequential: sequentialPlan,
-          parallel: parallelPlan
-        });
-        setGeneratedPlan('');
+        const response = await iterativeService.callFeatureComparison(task);
+        console.log(response);
+        setIterativeResponse(response);
       } else {
-        const prompt = createPrompt(task, method);
-        const plan = await apiService.generatePlan(provider, prompt);
-        setGeneratedPlan(plan);
+        let response: SequentialMethodResponse | ParallelMethodResponse;
+        if (method === 'sequential') {
+          response = await iterativeService.callSequentialMethod(task);
+        } else {
+          response = await iterativeService.callParallelMethod(task);
+        }
+        
+        setIterativeResponse(response);
         setComparisonResult(null);
       }
     } catch (err) {
@@ -61,7 +50,7 @@ function App() {
     }
   };
 
-  const isFormValid = task.trim().length > 0 && selectedProvider;
+  const isFormValid = task.trim().length > 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
@@ -85,10 +74,7 @@ function App() {
           {/* Input Panel */}
           <div className="space-y-4 sm:space-y-6">
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 shadow-lg border border-white/20">
-              <div className="flex items-center gap-2 mb-4 sm:mb-6">
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Configuration</h2>
-              </div>
+          
 
               <div className="space-y-4 sm:space-y-6">
                 <TaskInput
@@ -99,11 +85,6 @@ function App() {
                 <MethodSelector
                   value={method}
                   onChange={setMethod}
-                />
-                <ApiSelector
-                  providers={AI_PROVIDERS}
-                  value={selectedProvider}
-                  onChange={setSelectedProvider}
                 />
                 <GenerateButton
                   onClick={handleGeneratePlan}
@@ -117,8 +98,9 @@ function App() {
           {/* Output Panel */}
           <div className="space-y-4 sm:space-y-6">
             <OutputDisplay
-              content={generatedPlan}
+              content=""
               comparisonResult={comparisonResult}
+              iterativeResponse={iterativeResponse}
               loading={loading}
               error={error}
             />

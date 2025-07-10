@@ -88,3 +88,28 @@ export interface ComparisonResult {
   sequential: string;
   parallel: string;
 }
+export interface IterativeMethodResponse {
+  task: string;
+  method: string;
+  generated: string;
+  steps: Array<{
+    number: number;
+    requiredState: string;
+    instruction: string;
+    instructionType: string;
+    resultingState: string;
+    dependencies: string;
+  }>;
+  totalSteps: number;
+  estimatedTime: string;
+  criticalPath: string;
+  parallelOpportunities: string;
+}
+
+export interface FeatureComparisonResult {
+  table: Array<{
+    feature: string;
+    sequential: string;
+    parallel: string;
+  }>;
+}

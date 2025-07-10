@@ -20,9 +20,9 @@ export const ApiSelector: React.FC<ApiSelectorProps> = ({ providers, value, onCh
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
       >
-    
+        <option value="">Select an AI Provider</option>
         {providers.map((provider) => (
-          <option key={provider.id} value={provider.id} defaultChecked>
+          <option key={provider.id} value={provider.id}>
             {provider.name}
           </option>
         ))}

@@ -2,22 +2,36 @@ import React from 'react';
 import { FileText, Copy, CheckCircle, Clock, ArrowRight, CheckSquare, AlertCircle, GitCompare } from 'lucide-react';
 import { PlanRenderer } from './PlanRenderer';
 import { ComparisonTable } from './ComparisonTable';
-import { ComparisonResult } from '../types';
+import { ComparisonResult, IterativeMethodResponse, FeatureComparisonResult } from '../types';
+import { resolve } from 'path';
 
 interface OutputDisplayProps {
   content: string;
   comparisonResult: ComparisonResult | null;
+  iterativeResponse?: IterativeMethodResponse | null;
+  featureComparison?: FeatureComparisonResult | null;
   loading: boolean;
   error: string | null;
 }
 
-export const OutputDisplay: React.FC<OutputDisplayProps> = ({ content, comparisonResult, loading, error }) => {
+export const OutputDisplay: React.FC<OutputDisplayProps> = ({ 
+  content, 
+  comparisonResult, 
+  iterativeResponse,
+  featureComparison,
+  loading, 
+  error 
+}) => {
   const [copied, setCopied] = React.useState(false);
 
   const handleCopy = async () => {
     try {
-      const textToCopy = comparisonResult 
+      const textToCopy = featureComparison
+        ? JSON.stringify(featureComparison, null, 2)
+        : comparisonResult 
         ? `Sequential Method:\n${comparisonResult.sequential}\n\nParallel Method:\n${comparisonResult.parallel}`
+        : iterativeResponse
+        ? JSON.stringify(iterativeResponse, null, 2)
         : content;
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
@@ -82,24 +96,16 @@ export const OutputDisplay: React.FC<OutputDisplayProps> = ({ content, compariso
     );
   }
 
-  if (!content && !comparisonResult) {
-    return (
-      <div className="bg-gradient-to-br from-gray-50 to-blue-50 border-2 border-dashed border-gray-300 rounded-xl p-6 sm:p-8 lg:p-12 text-center">
-        <div className="max-w-md mx-auto">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
-            <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-          </div>
-          <h3 className="text-lg sm:text-xl font-semibold text-gray-700 mb-2">Ready to Generate</h3>
-          <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-            Enter your task, select a sequencing method and AI provider, then click "Generate Plan" to see your structured execution plan appear here.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  
 
-  const isComparison = !!comparisonResult;
-  const displayTitle = isComparison ? 'Method Comparison Results' : 'Generated Execution Plan';
+  const isComparison = !!comparisonResult || !!featureComparison;
+  const isIterative = !!iterativeResponse;
+  
+  let displayTitle = 'Generated Execution Plan';
+  if (featureComparison) displayTitle = 'Feature Comparison Results';
+  else if (comparisonResult) displayTitle = 'Method Comparison Results';
+  else if (iterativeResponse) displayTitle = `${iterativeResponse.method} Plan`;
+  
   const displayIcon = isComparison ? GitCompare : CheckSquare;
 
   return (
@@ -108,7 +114,6 @@ export const OutputDisplay: React.FC<OutputDisplayProps> = ({ content, compariso
         <div className="flex items-center gap-3">
     
           <div>
-            <span className="text-sm sm:text-base font-semibold text-gray-800">{displayTitle}</span>
             <div className="text-xs text-gray-600 flex items-center gap-1">
               <Clock className="w-3 h-3" />
               {new Date().toLocaleString()}
@@ -134,12 +139,92 @@ export const OutputDisplay: React.FC<OutputDisplayProps> = ({ content, compariso
       </div>
       
       <div className="max-h-[400px] sm:max-h-[500px] lg:max-h-[600px] overflow-y-auto">
-        {isComparison ? (
+        {featureComparison ? (
+          <FeatureComparisonTable featureComparison={featureComparison} />
+        ) : comparisonResult ? (
           <ComparisonTable comparisonResult={comparisonResult} />
+        ) : iterativeResponse ? (
+          <IterativePlanRenderer response={iterativeResponse} />
         ) : (
-          <PlanRenderer content={content} />
+          <PlanRenderer content={iterativeResponse} />
         )}
       </div>
+    </div>
+  );
+};
+
+// New component for feature comparison
+const FeatureComparisonTable: React.FC<{ featureComparison: FeatureComparisonResult }> = ({ featureComparison }) => {
+  return (
+    <div className="p-4 sm:p-6">
+      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm">
+        <div className="bg-gray-50 px-4 sm:px-6 py-3 border-b border-gray-200">
+          <h4 className="text-base font-medium text-gray-800 flex items-center gap-2">
+            <GitCompare className="w-5 h-5 text-purple-600" />
+            Feature Comparison Analysis
+          </h4>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Feature
+                </th>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-blue-500 uppercase tracking-wider">
+                  Sequential Method
+                </th>
+                <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-purple-500 uppercase tracking-wider">
+                  Parallel Method
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {featureComparison.table.map((row, index) => (
+                <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                    {row.feature}
+                  </td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-blue-800">
+                    {row.sequential}
+                  </td>
+                  <td className="px-4 sm:px-6 py-4 text-sm text-purple-800">
+                    {row.parallel}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// New component for iterative method responses
+const IterativePlanRenderer: React.FC<{ response: IterativeMethodResponse }> = ({ response }) => {
+  const getMethodColor = (method: string) => {
+    return 'from-gray-500 to-gray-600';
+  };
+  console.log(response);
+
+  const getInstructionTypeColor = (type: string) => {
+    if (type.toLowerCase().includes('simple')) return 'from-green-500 to-emerald-500';
+    if (type.toLowerCase().includes('purpose')) return 'from-blue-500 to-cyan-500';
+    if (type.toLowerCase().includes('mandatory')) return 'from-red-500 to-pink-500';
+    if (type.toLowerCase().includes('conditional')) return 'from-purple-500 to-violet-500';
+    return 'from-orange-500 to-amber-500';
+  };
+
+  return (
+    <div className="p-4 sm:p-6 space-y-6">
+      {/* Header Section */}
+
+
+      <div className="prose max-w-full" dangerouslySetInnerHTML={{ __html: response }}></div>
+
+
     </div>
   );
 };
