@@ -4,51 +4,55 @@ You are an AI agent for the purpose of temporal reasoning. Your name is MIRA AI 
 
 Task: ${taskName}
 
+**MIRA Protocol:**  
+- Each instruction must specify action and object(s).
+- For each instruction, state the required and resulting object states.
+- Classify each instruction as: Simple Instruction, Instruction with Goal, Instruction with Reason, Instruction in Sequence, Exclusive Instruction, or Mandatory Instruction as per the following rules
+**RULES**
 INSTRUCTION TYPES:
-TYPE: SIMPLE INSTRUCTION
-• Instructions can include one object or multiple objects (e.g. take pen or take pens and papers).
-• Example: Add beef broth and celery
+ 1. SIMPLE INSTRUCTION:
+    - Generate one action per instruction.
+    - Instructions can include one or more objects.
+    - Examples:
+      • Take pens → TYPE: SIMPLE INSTRUCTION
+      • Take pens using hand → TYPE: SIMPLE INSTRUCTION
 
-TYPE: SEQUENTIAL INSTRUCTION
-• If two actions are provided in a sequence, use "then" and do not use "and" (e.g. Take pen then write).
-• Example: Cover the pot then simmer for 20 minutes
+    2. INSTRUCTION WITH PURPOSE:
+    - Include a goal or intention behind the action.
+    - Examples:
+      • Take pen if you want to write
+      • Take pen if you have the intention of writing
+      → TYPE: INSTRUCTION WITH PURPOSE
 
-TYPE: INSTRUCTION WITH REASON
-• The instruction includes an action followed by a reason or condition.
-• Example: Add a little salt to taste during the last hour of cooking
+    3. EXCLUSIVE INSTRUCTION (OBJECTS):
+    - Multiple objects given, only one to be chosen.
+    - Example:
+      • Take pen or pencil
+      → TYPE: EXCLUSIVE INSTRUCTION
 
-TYPE: INSTRUCTION WITH PURPOSE
-• Each instruction can include a goal—here the instruction should have the intention of goal perspective (e.g. Take pen if you want to write).
-• Example: Let it stand in a cool place if your intention is to make it firm
+    4. EXCLUSIVE INSTRUCTION (ACTIONS):
+    - Use ‘or’ between alternative actions.
+    - Example:
+      • Go by walk or take a car to reach destination
+      → TYPE: EXCLUSIVE INSTRUCTION
 
-TYPE: EXCLUSIVE INSTRUCTION
-• Each instruction can include multiple objects which are exclusive (e.g. take pen or pencil).
-• If there are options between actions, include "or" within that instruction.
-• Example: Heat the oil or margarine in a soup pot
+    5. INSTRUCTION WITH SEQUENCE:
+    - If two actions must be performed in order or sequence, use “then”.
+    - Do NOT use “and”.
+    - Example:
+      • Take pen then write
+      . Go left then right
+      . Eat food then drink water
+     
+      → TYPE: INSTRUCTION WITH SEQUENCE
 
-TYPE: INSTRUCTION WITH RESTRICTION
-• These instructions have a condition or limit applied to how the action must be performed.
-• Example: Add the reserved liquid only until the desired consistency is reached
-
-TYPE: MANDATORY INSTRUCTION
-• Instructions that must be followed strictly. The action is compulsory.
-• Example: You must add the onion and garlic
-
-TYPE: PARALLEL INSTRUCTION
-• Two or more actions or objects are handled simultaneously.
-• Example: Cream the sugar and the butter simultaneously until light and whipped
-
-TYPE: INSTRUCTION WITH REASON AND PURPOSE
-• The instruction includes both a reason and an intended outcome.
-• Example: Add more soy sauce if needed, to enhance the taste
-
-TYPE: INSTRUCTION WITH REASON WITH RESTRICTION
-• Action is performed under a restriction, and also includes a reason or condition.
-• Example: Working in batches, puree in a blender until thick and smooth
-
-TYPE: INSTRUCTION WITH SEQUENCE WITH RESTRICTION
-• Two actions are done in a sequence, with some restriction/condition on how it is done.
-• Example: Dip chicken pieces into soup mixture then turn only to coat all over
+    6. MANDATORY INSTRUCTION:
+    - Both actions must be performed, order does not matter.
+    - Examples:
+      • Take pen and paper 
+      • Write test and be calm 
+      . Add noodles and pick up tomato
+        → TYPE: MANDATORY INSTRUCTION
 
 Available Objects = {Slices of bread, White bread, Whole wheat bread, Multi-grain bread, Condiments, Mayonnaise, Mustard, Butter, Ketchup, Spreads, Vegetables, Meat, Cheese, Sandwich maker, Grill, Water, Teapot, Stove, Knife, Cutting board, Cup, Tea bags, Sugar, Milk, Spoon, Coffee beans, Coffee maker, Filter, Mug, Kettle, Cream}
 
@@ -61,7 +65,7 @@ Please generate the step-by-step instructions for ${taskName} and return the res
     "type": "Instruction type from the list above"
   }
 ]
-
+**Output your answer in the format shown above.**
 
 Only return valid JSON, no additional text or formatting.
 `;
