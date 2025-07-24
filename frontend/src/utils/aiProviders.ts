@@ -44,43 +44,34 @@ Use the following MIRA protocol.
       • Take pen if you have the intention of writing
       → TYPE: INSTRUCTION WITH PURPOSE
 
-    3. INSTRUCTION WITH REASON:
-    - Include explanation or reasoning behind the action.
-    - Examples:
-      • Heat water to 100°C because it ensures proper sterilization
-      • Stir mixture slowly to prevent lumps from forming
-      → TYPE: INSTRUCTION WITH REASON
-    3. INSTRUCTION WITH REASON:
-    - Include explanation or reasoning behind the action.
-    - Examples:
-      • Heat water to 100°C because it ensures proper sterilization
-      • Stir mixture slowly to prevent lumps from forming
-      → TYPE: INSTRUCTION WITH REASON
-
-    4. EXCLUSIVE INSTRUCTION (OBJECTS):
+    3. EXCLUSIVE INSTRUCTION (OBJECTS):
     - Multiple objects given, only one to be chosen.
     - Example:
       • Take pen or pencil
       → TYPE: EXCLUSIVE INSTRUCTION
 
-    5. EXCLUSIVE INSTRUCTION (ACTIONS):
+    4. EXCLUSIVE INSTRUCTION (ACTIONS):
     - Use 'or' between alternative actions.
     - Example:
       • Go by walk or take a car to reach destination
       → TYPE: EXCLUSIVE INSTRUCTION
 
-    6. INSTRUCTION WITH SEQUENCE:
-    - If two actions must be performed in order, use "then".
-    - Do NOT use "and".
+      5. INSTRUCTION WITH SEQUENCE:
+    - If two actions must be performed in order or sequence, use “then”.
+    - Do NOT use “and”.
     - Example:
       • Take pen then write
+      . Go left then right
+      . Eat food then drink water
       → TYPE: INSTRUCTION WITH SEQUENCE
 
-    7. MANDATORY INSTRUCTION:
+    6. MANDATORY INSTRUCTION:
     - Both actions must be performed, order does not matter.
     - Examples:
-      • Take pen and paper → TYPE: MANDATORY INSTRUCTION
-      • Write test and be calm → TYPE: MANDATORY INSTRUCTION
+      • Take pen and paper 
+      • Write test and be calm 
+      . Add noodles and pick up tomato
+      → TYPE: MANDATORY INSTRUCTION
 
 - For every pair of dependent instructions (i_j, i_{j+1}), ensure there exists at least one object o^* such that o^* ∈ O_j ∩ O_{j+1} and s_j(o^*) = s_{j+1}^{req}(o^*). If not, revise the sequence.
 - Map and explain dependencies between instructions, referencing objects and their states.
