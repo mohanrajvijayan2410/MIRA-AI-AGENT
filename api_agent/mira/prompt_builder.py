@@ -68,17 +68,22 @@ Important: All instructions shoudl follow a object and shoudl retaint the object
       → TYPE: EXCLUSIVE INSTRUCTION
 
     5. INSTRUCTION WITH SEQUENCE:
-    - If two actions must be performed in order, use “then”.
+    - If two actions must be performed in order or sequence, use “then”.
     - Do NOT use “and”.
     - Example:
       • Take pen then write
+      . Go left then right
+      . Eat food then drink water
+     
       → TYPE: INSTRUCTION WITH SEQUENCE
 
     6. MANDATORY INSTRUCTION:
     - Both actions must be performed, order does not matter.
     - Examples:
-      • Take pen and paper → TYPE: MANDATORY INSTRUCTION
-      • Write test and be calm → TYPE: MANDATORY INSTRUCTION
+      • Take pen and paper 
+      • Write test and be calm 
+      . Add noodles and pick up tomato
+        → TYPE: MANDATORY INSTRUCTION
 
 
 - For every pair of dependent instructions (i_j, i_{j+1}), ensure there exists at least one object o^* such that o^* ∈ O_j ∩ O_{j+1} and s_j(o^*) = s_{j+1}^{req}(o^*). If not, revise the sequence.
