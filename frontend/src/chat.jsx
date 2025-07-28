@@ -337,7 +337,7 @@ function Chat() {
 								<h4 className="text-lg font-semibold text-gray-700 mb-4">
 									Final Instructions
 								</h4>
-								<div className="space-y-3">
+								<div className="grid grid-cols-2 gap-3">
 									{finalResults.instructions.map((instruction, index) => (
 										<div
 											key={index}

@@ -86,10 +86,10 @@ function csv() {
  
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-2 md:px-4 py-4 md:py-8">
+      <div className="mx-auto px-2 md:px-4 py-4 md:py-8">
         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-stretch">
           {/* Left Column: Upload & Search & Task Details */}
-          <div className="md:w-1/2 w-full flex flex-col gap-6 md:gap-8">
+          <div className="w-full flex flex-row gap-6 md:gap-8">
             {/* Step 1: Upload */}
             <div className="space-y-2 md:space-y-4">
               <div className="flex items-center gap-2 md:gap-3">
@@ -121,7 +121,7 @@ function csv() {
 
             {/* Task Details Section */}
             {csvData.length > 0 && hasSearched && (
-              <div className="w-full">
+              <div className="w-[500px]">
                 <TaskDetails
                   result={searchResult}
                   hasSearched={hasSearched}
@@ -133,33 +133,19 @@ function csv() {
               </div>
             )}
 
-            {/* Footer for left column */}
-            {csvData.length === 0 && (
-              <div className="text-center py-16">
-                <div className="w-full max-w-sm ml-9 text-left">
-                  <div className="w-16 h-16 bg-gray-00 rounded-full flex items-center justify-center mx-auto">
-                    {/* <Database className="w-8 h-8 text-gray-400" /> */}
-                  </div>
-                  <h3 className="text-2xl font-medium text-gray-900 -ml-5 -mt-2">
-  Get started by uploading your CSV
-</h3>
-
-                  <p className="text-gray-600">
-                  </p>
-                </div>
-              </div>
-            )}
+            
           </div>
 
           {/* Right Column: Results/Instructions */}
-          <div className="md:w-1/2 w-full flex flex-col justify-start">
+          
+        </div>
+        <div className="w-full flex flex-col justify-start">
             <ResultsTable 
               result={searchResult}
               hasSearched={hasSearched}
               query={currentQuery}
             /> 
           </div>
-        </div>
       </div>
     </div>
   );

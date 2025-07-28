@@ -31,19 +31,19 @@ function App() {
 								to="/"
 								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
 							>
-								Chat and Edit
+								CustomFlow
 							</Link>
 							<Link
 								to="/upload"
 								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
 							>
-								Upload CSV
+								ObjActSeq
 							</Link>
 								<Link
 								to="/iterative"
 								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
 							>
-								Iterative Method
+								SeqParallelo
 							</Link>
 						</div>
 					</div>

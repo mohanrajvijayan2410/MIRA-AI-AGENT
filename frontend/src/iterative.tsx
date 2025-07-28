@@ -103,7 +103,7 @@ function Iterative() {
       <div className="text-center mb-6 sm:mb-8 pt-4 sm:pt-6">
         <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4">
           <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-black text-center sm:text-left">
-            ITERATIVE METHOD -
+            SeqParallelo -
           </h1>
           <div className='h-10'>
             <img src="krama.png" alt="" />
@@ -119,7 +119,7 @@ function Iterative() {
             <div className="text-center py-8 sm:py-12">
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-6 sm:p-8 shadow-lg border border-white/20 max-w-2xl mx-auto">
                 <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
-                  Welcome to the Iterative Method
+                  Welcome to the SeqParallelo   
                 </h2>
                 <p className="text-gray-600 mb-6">
                   Enter a task description below and I'll analyze it using three different methods:
@@ -172,7 +172,7 @@ function Iterative() {
                   <div className="bg-blue-600 px-4 sm:px-6 py-3">
                     <h3 className="text-lg sm:text-xl font-semibold text-white">Sequential Completion Method</h3>
                   </div>
-                  <div className="p-4 sm:p-6 max-h-96 overflow-y-auto">
+                  <div className="p-4 sm:p-6  overflow-y-auto">
                     <div 
                       className="prose max-w-none text-sm sm:text-base"
                       dangerouslySetInnerHTML={{ __html: results.sequential }}
@@ -187,7 +187,7 @@ function Iterative() {
                   <div className="bg-purple-600 px-4 sm:px-6 py-3">
                     <h3 className="text-lg sm:text-xl font-semibold text-white">Step-by-Step Parallel Method</h3>
                   </div>
-                  <div className="p-4 sm:p-6 max-h-96 overflow-y-auto">
+                  <div className="p-4 sm:p-6   overflow-y-auto">
                     <div 
                       className="prose max-w-none text-sm sm:text-base"
                       dangerouslySetInnerHTML={{ __html: results.parallel }}
@@ -202,7 +202,7 @@ function Iterative() {
                   <div className="bg-green-600 px-4 sm:px-6 py-3">
                     <h3 className="text-lg sm:text-xl font-semibold text-white">Comparison</h3>
                   </div>
-                  <div className="p-4 sm:p-6 max-h-96 overflow-y-auto">
+                  <div className="p-4 sm:p-6  overflow-y-auto">
                     <div 
                       className="prose max-w-none text-sm sm:text-base"
                       dangerouslySetInnerHTML={{ __html: results.comparison }}
