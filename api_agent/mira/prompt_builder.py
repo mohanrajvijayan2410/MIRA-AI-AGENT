@@ -15,9 +15,8 @@ CRITICAL FORMATTING REQUIREMENTS - FOLLOW EXACTLY:
 - Each step MUST be on a single line with this EXACT format:
   "1. [Concise step description]: DUR [time estimate] Type: [instruction type]"
 - Keep each step concise but informative - include key details without being overly verbose
-- Instruction types MUST be either "Simple Instruction" or "Instruction with Reason"
+- Instruction types MUST be  "Simple Instruction" 
 - Use "Simple Instruction" for basic steps
-- Use "Instruction with Reason" for steps that include explanation or important details
 - Provide realistic time estimates for each step
 - Use clear, concise language
 - Focus on practical implementation
@@ -28,7 +27,7 @@ EXACT FORMAT EXAMPLE - COPY THIS STRUCTURE:
 3. Heat water on stovetop until boiling: DUR 5 minutes Type: Simple Instruction
 4. Pour boiling water into clean teapot: DUR 1 minute Type: Simple Instruction
 5. Add tea leaves to hot water: DUR 1 minute Type: Simple Instruction
-6. Let tea steep for 3-5 minutes: DUR 4 minutes Type: Instruction with Reason
+6. Let tea steep for 3-5 minutes: DUR 4 minutes Type: Simple Instruction
 7. Strain tea leaves from liquid: DUR 1 minute Type: Simple Instruction
 8. Pour tea into cups and serve: DUR 2 minutes Type: Simple Instruction
 
@@ -39,7 +38,7 @@ Important: All instructions shoudl follow a object and shoudl retaint the object
 **MIRA Protocol:**  
 - Each instruction must specify action and object(s).
 - For each instruction, state the required and resulting object states.
-- Classify each instruction as: Simple Instruction, Instruction with Goal, Instruction with Reason, Instruction in Sequence, Exclusive Instruction, or Mandatory Instruction as per the following rules
+- Classify each instruction as: Simple Instruction, Instruction with purpose, Instruction in Sequence, Exclusive Instruction(action), Exclusive Instruction(object) or Mandatory Instruction as per the following rules
 **RULES**
  1. SIMPLE INSTRUCTION:
     - Generate one action per instruction.
@@ -130,8 +129,7 @@ If you encounter any sequence that violates the consistency or dependency condit
 5. chop beef
    Required state: beef is picked
    Resulting state: beef is chopped
-   Type: Instruction with Reason
-   Reason: Prepares beef for frying
+   Type: Instruction in Sequence
    Dependencies: Step 2
    Consistency: Yes
 
