@@ -28,7 +28,8 @@ Use the following MIRA protocol.
 **MIRA Protocol:**  
 - Each instruction must specify action and object(s).
 - For each instruction, state the required and resulting object states.
-- Classify each instruction as: Simple Instruction, Instruction with Goal, Instruction with Reason, Instruction in Sequence, Exclusive Instruction, or Mandatory Instruction as per the following rules
+- Classify each instruction as: Simple Instruction, Instruction with purpose, Instruction in Sequence, Exclusive Instruction(action), Exclusive Instruction(object) or Mandatory Instruction as per the following rules
+**RULES**
 **RULES**
  1. SIMPLE INSTRUCTION:
     - Generate one action per instruction.
@@ -170,11 +171,10 @@ description used - Make a dish of beef fried rice, which consists of cooked rice
    Dependencies: Step 1
    Consistency: Yes
 
-5. chop beef
+5. Chop beef
    Required state: beef is picked
    Resulting state: beef is chopped
    Type: Simple instruction
-   Reason: Prepares beef for frying
    Dependencies: Step 2
    Consistency: Yes
 
