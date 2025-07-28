@@ -173,7 +173,7 @@ description used - Make a dish of beef fried rice, which consists of cooked rice
 5. chop beef
    Required state: beef is picked
    Resulting state: beef is chopped
-   Type: Instruction with Reason
+   Type: Simple instruction
    Reason: Prepares beef for frying
    Dependencies: Step 2
    Consistency: Yes

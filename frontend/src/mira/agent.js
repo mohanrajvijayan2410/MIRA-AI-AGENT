@@ -56,7 +56,7 @@ export const generateDependencyTable = async (instructionsJson) => {
   const dependencyPrompt = `
 You are given a list of step-by-step instructions in JSON format. Each item has:
 - instruction: a textual description
-- type: one of “Simple Instruction”, “Instruction in Sequence”, “Instruction with Reason”, etc.
+- type: one of “Simple Instruction”, “Instruction in Sequence”, etc.
 
 Your task is to produce a dependency table in JSON array form where each row has:
 - step: the 1‑based index of the instruction

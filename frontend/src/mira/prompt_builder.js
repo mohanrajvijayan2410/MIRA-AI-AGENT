@@ -7,7 +7,7 @@ Task: ${taskName}
 **MIRA Protocol:**  
 - Each instruction must specify action and object(s).
 - For each instruction, state the required and resulting object states.
-- Classify each instruction as: Simple Instruction, Instruction with Goal, Instruction with Reason, Instruction in Sequence, Exclusive Instruction, or Mandatory Instruction as per the following rules
+- Classify each instruction as: Simple Instruction, Instruction with Goal, Instruction in Sequence, Exclusive Instruction, or Mandatory Instruction as per the following rules
 **RULES**
 INSTRUCTION TYPES:
  1. SIMPLE INSTRUCTION:
