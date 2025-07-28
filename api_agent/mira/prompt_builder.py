@@ -126,10 +126,10 @@ If you encounter any sequence that violates the consistency or dependency condit
    Dependencies: Step 1
    Consistency: Yes
 
-5. chop beef
+5. Chop beef
    Required state: beef is picked
    Resulting state: beef is chopped
-   Type: Instruction in Sequence
+   Type: Simple instruction
    Dependencies: Step 2
    Consistency: Yes
 
