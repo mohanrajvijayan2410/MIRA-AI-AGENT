@@ -1,11 +1,11 @@
-def build_prompt(language_option, recipe_name, model):
+def build_prompt(language_option, data_name, model):
       
    prompt_template = f"""
   You are an AI agent for the purpose of temporal reasoning. Your name is MIRA AI agent. You have to follow the protocols listed in MIRA PROTOCOL. I'll give you a list of available Objects (OBJ) and Valid Actions. Pickout correct objects M¯im¯ams¯a Inspired Framework- Temporal Reasonin from the list of Available Objects. Each action duration (DUR) is also given in valid action. The starting condition (START) and the end goal (FINAL GOAL) for the sequence is also given. With these you have to generate a sequence of instructions for the given task description. For each instruction also provide the type (TYPE) of instruction from MIRA PROTOCOL
 You are MIRA AI Agent for temporal reasoning and instruction sequencing.  
 Your task is to generate a stepwise, dependency-aware sequence of instructions for the following task, using only the provided actions and objects, and respecting initial states and dependencies.
 
-Recipe name: {recipe_name}
+Data name: {data_name}
 
 Note: All instructions should possess a common object that is related to the task. All instructions should possess a common object.
 

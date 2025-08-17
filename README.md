@@ -1,8 +1,8 @@
-# 🍳 MIRA: An Intelligent Recipe Agent
+# 🍳 MIRA: An Intelligent data Agent
 
 Hosted Link: [https://mira-ai-agent.web.app](https://mira-ai-agent.web.app)
 
-**MIRA** is a powerful AI-driven recipe generation assistant that intelligently selects between different LLMs (Groq & Gemini) to produce structured recipes. Designed with LangChain agents, Flask backend, and a Vite + Tailwind CSS frontend, MIRA is a full-stack showcase of modern agentic AI workflows.
+**MIRA** is a powerful AI-driven data generation assistant that intelligently selects between different LLMs (Groq & Gemini) to produce structured datas. Designed with LangChain agents, Flask backend, and a Vite + Tailwind CSS frontend, MIRA is a full-stack showcase of modern agentic AI workflows.
 
 ---
 
@@ -101,7 +101,7 @@ Valid Actions = {Take OBJ: DUR 1 minute, Heat OBJ: DUR 3 minutes, Wait: DUR 3 mi
 
 * 🤖 **Agent-Based Reasoning** using LangChain
 * 🔁 **Multimodal Tool Invocation** – Supports both Groq & Gemini
-* 🌍 **Multilingual Recipe Generation**
+* 🌍 **Multilingual Data Generation**
 * 🧠 **Conversational Memory** with contextual prompts
 * ⚡ **Modern Frontend** with React, Vite, and Tailwind CSS
 * 🔐 Secure API Keys using `.env`
@@ -149,23 +149,23 @@ Valid Actions = {Take OBJ: DUR 1 minute, Heat OBJ: DUR 3 minutes, Wait: DUR 3 mi
 
 ## 🧠 How It Works
 
-1. User submits a recipe name and language preference from the frontend.
+1. User submits a data name and language preference from the frontend.
 2. Flask backend invokes `run_agent()`, which builds a task prompt.
 3. LangChain agent chooses the right tool (Groq or Gemini) and returns a response.
 4. Evaluation metrics are computed.
-5. Frontend receives the response and displays both recipe and performance.
+5. Frontend receives the response and displays both data and performance.
 
 ---
 
 ## 📦 API Endpoint
 
-### `POST /generate-recipe`
+### `POST /generate-data`
 
 #### Payload
 
 ```json
-{
-  "recipe_name": "Pasta Alfredo",
+
+  "data_name": "Pasta Alfredo",
   "language_option": "English",
   "model": "groq"
 }
@@ -279,6 +279,6 @@ Stepwise Instructions with Classification
 
 ```
 
-These structured outputs are fed back into the LangChain agent to ensure clarity, dependency management, and consistency across generated recipes.
+These structured outputs are fed back into the LangChain agent to ensure clarity, dependency management, and consistency across generated data.
 
 ```

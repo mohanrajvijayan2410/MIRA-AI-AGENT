@@ -1,6 +1,6 @@
 # MIRA AI Agent
 
-A conversational, agentic AI recipe generator. Uses multiple LLM backends (Groq, Gemini) as tools.
+A conversational, agentic AI data generator. Uses multiple LLM backends (Groq, Gemini) as tools.
 
 ## Structure
 

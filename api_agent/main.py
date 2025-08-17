@@ -14,29 +14,24 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/generate-recipe", methods=["POST"])
-def generate_recipe():
+
+@app.route("/generate-data", methods=["POST"])
+def generate_data():
     data  = request.get_json()
-    name  = data.get("recipe_name")
+    name  = data.get("data_name")
     lang  = data.get("language_option")
     model = data.get("model")  # optional override: "groq" or "gemini"
     print("doign this")
     try:
         print("running model")
-        recipe = run_agent(name, lang, model)
+        data = run_agent(name, lang, model)
         # Calculate metrics
         evaluator = EvaluationMetrics()
         evaluator.start_task()
         evaluator.end_task(success=True, progress_score=3, task_duration=1) 
         metrics = evaluator.get_metrics()
         return {
-            "recipe": recipe,
-            "metrics": {
-                "AS": round(metrics['AS'], 2),
-                "CS": round(metrics['CS'], 2),
-                "TCR": round(metrics['TCR'], 2),
-                "ACT": round(metrics['ACT'], 2)
-            }
+            "data": data,
         }
     
     except Exception as e:

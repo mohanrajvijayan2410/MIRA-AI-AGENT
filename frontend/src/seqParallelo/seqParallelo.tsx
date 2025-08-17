@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader2 } from 'lucide-react';
-import { IterativeService } from './services/iterativeService';
-import { SequentialMethodResponse, ParallelMethodResponse } from './services/iterativeService';
+import { IterativeService } from './iterativeService';
+import { SequentialMethodResponse, ParallelMethodResponse } from './iterativeService';
 
 const iterativeService = new IterativeService();
+
 
 interface ChatMessage {
   id: number;

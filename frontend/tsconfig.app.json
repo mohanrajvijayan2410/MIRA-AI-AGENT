@@ -20,5 +20,5 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
-	"include": ["src/mira", "src/main.jsx", "src/chat.jsx"]
+	"include": ["src/customFlow", "src/main.jsx", "src/customFlow/customFlow.jsx"]
 }

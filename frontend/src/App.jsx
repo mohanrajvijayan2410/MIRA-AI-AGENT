@@ -1,7 +1,7 @@
 import React from "react";
-import Chat from "./chat";
-import CSV from "./csv";
-import Iterative from "./iterative";
+import Chat from "./customFlow/customFlow";
+import CSV from "./ObjActSeq/ObjActSeq";
+import Iterative from "./seqParallelo/seqParallelo";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Bot } from "lucide-react";
@@ -9,8 +9,6 @@ import { Bot } from "lucide-react";
 function App() {
 	return (
 		<Router>
-			
-            
 			<div className="bg-blue-200 shadow-sm border-b border-gray-200">
 				<div className="max-w-7xl mx-auto px-4 py-3">
 					<div className="flex items-center justify-between">
@@ -26,22 +24,21 @@ function App() {
 
 						{/* Nav Links */}
 						<div className="flex gap-5">
-						
 							<Link
 								to="/"
-								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center"
 							>
 								CustomFlow
 							</Link>
 							<Link
 								to="/upload"
-								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center"
 							>
 								ObjActSeq
 							</Link>
-								<Link
+							<Link
 								to="/iterative"
-								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+								className="text-black hover:text-white bg-green-300 hover:bg-green-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-lg px-5 py-2.5 text-center inline-flex items-center"
 							>
 								SeqParallelo
 							</Link>

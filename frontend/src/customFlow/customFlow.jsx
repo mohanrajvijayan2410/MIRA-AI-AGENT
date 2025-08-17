@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Send, User, ChevronDown, Bot } from "lucide-react";
-import { generateInstructions, finalizeInstructions } from "./mira/agent";
+import { generateInstructions, finalizeInstructions } from "./agent";
 
 function Chat() {
 	const [messages, setMessages] = useState([]);
