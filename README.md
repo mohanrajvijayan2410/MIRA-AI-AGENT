@@ -279,6 +279,6 @@ Stepwise Instructions with Classification
 
 ```
 
-These structured outputs are fed back into the LangChain agent to ensure clarity, dependency management, and consistency across generated data.
+These structured outputs are fed back into the LangChain agent to ensure clarity, dependency management, and consistency across generated data.q
 
 ```
