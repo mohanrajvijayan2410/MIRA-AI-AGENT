@@ -9,11 +9,11 @@ import {
 
 // API Keys
 const API_KEYS = {
-	groq: "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",
-	gemini: "AIzaSyABTtAIlSwvPo_TRTRSV7hYmDUHT-AB0Io",
-	mistral: "uZBbj7146rvEdme8NrxLunXOLuNiSep8",
-	together: "tgp_v1_o2_1f2GiAh1hRU4QzCOVgMeneExwQCSOHArnTR8Lq-g",
-	deepseek: "sk-6cdeb51f10a4493fa0612737a836e233",
+	groq: "gsk_uI9...CIdNVtK46",
+	gemini: "AIzaS...-AB0Io",
+	mistral: "uZB...iSep8",
+	together: "tgp_v...ArnTR8Lq-g",
+	deepseek: "sk-6cd..7a836e233",
 };
 
 const createPrompt = (
@@ -232,7 +232,7 @@ const generateWithGroq = async (
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				model: "llama3-8b-8192",
+				model: "llama-3.3-70b-versatile",
 				messages: [
 					{
 						role: "system",
@@ -477,7 +477,7 @@ Respond with just the time estimate (e.g., "5-10 minutes", "2-3 hours", "30-45 m
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					model: "llama3-8b-8192",
+					model: "llama-3.3-70b-versatile",
 					messages: [
 						{
 							role: "system",

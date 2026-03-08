@@ -40,7 +40,7 @@ export interface ComparisonResponse {
 }
 
 export class IterativeService {
-	private apiKey = "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";
+	private apiKey = "gsk_uI99o.....K46";
 
 	async callSequentialMethod(task: string): Promise<SequentialMethodResponse> {
 		const prompt = `You are a task planning specialist. I need you to break down the following task into a structured, step-by-step plan using the Sequential Completion Method.
@@ -498,7 +498,7 @@ Task: "${task}"
 						"Content-Type": "application/json",
 					},
 					body: JSON.stringify({
-						model: "llama3-70b-8192",
+						model: "llama-3.3-70b-versatile",
 						messages: [
 							{
 								role: "system",

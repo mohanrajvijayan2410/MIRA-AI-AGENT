@@ -242,7 +242,7 @@ function Iterative() {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Enter your task description (e.g., 'Wash and Hang 5 Shirts and 5 Towels')"
+                placeholder="Enter your task description (e.g., 'AC not working on 5 Computer Science labs and Central AC for two blocks')"
                 className="w-full p-3 sm:p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none bg-white shadow-sm text-sm sm:text-base"
                 rows={2}
                 disabled={isLoading}

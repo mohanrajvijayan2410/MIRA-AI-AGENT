@@ -1,7 +1,7 @@
 import Groq from "groq-sdk/index.mjs";
 import run from "../config/gemini";
 const groq = new Groq({
-	apiKey: "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",
+	apiKey: "gsk_uI9...ECIdNVtK46",
 	dangerouslyAllowBrowser: true,
 });
 

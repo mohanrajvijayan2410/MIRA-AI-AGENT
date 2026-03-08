@@ -66,7 +66,7 @@ function Chat() {
 					(instruction, index) => `
 				${index + 1}. ${instruction.instruction} 
 				<p style="color:green; font-weight: bold;">Type: ${instruction.type}</p>
-			`
+			`,
 				)
 				.join("<br>");
 
@@ -389,7 +389,7 @@ function Chat() {
 													<td className="px-4 py-2">{classification}</td>
 													<td className="px-4 py-2">{consistency}</td>
 												</tr>
-											)
+											),
 										)}
 									</tbody>
 								</table>
@@ -457,7 +457,7 @@ function Chat() {
 							value={inputValue}
 							onChange={(e) => setInputValue(e.target.value)}
 							onKeyPress={handleKeyPress}
-							placeholder="Enter your instruction (e.g., 'Make Coffee')"
+							placeholder="Enter your instruction (e.g., 'All Computers in CommonLab, has grounding issue.')"
 							className="w-full p-3 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue resize-none bg-white shadow-sm"
 							rows="1"
 							disabled={isLoading || reviewMode}
