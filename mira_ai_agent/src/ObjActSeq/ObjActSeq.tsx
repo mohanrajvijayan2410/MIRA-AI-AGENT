@@ -7,6 +7,15 @@ import { CSVSearcher } from "./searchUtils";
 
 import { CSVRow, SearchResult } from "../types";
 
+
+const allTasksCsvUrl = new URL("./dataset/Generic_Admin_Tasks_60_rows_.csv", import.meta.url)
+	.href;
+
+const genericAdminTasksCsvUrl = new URL(
+	"./dataset/Generic_Admin_Tasks_100000_rows_.csv",
+	import.meta.url
+).href;
+
 function App() {
 	const [csvData, setCsvData] = useState<CSVRow[]>([]);
 	const [searcher, setSearcher] = useState<CSVSearcher | null>(null);
@@ -109,6 +118,26 @@ function App() {
 								</h2>
 							</div>
 							<CSVUploader onDataLoaded={handleDataLoaded} />
+							<div className="space-y-3">
+															<div className="flex flex-wrap gap-2">
+																<a
+																	href={allTasksCsvUrl}
+																	download="Generic_Admin_Tasks_60_rows_.csv"
+																	className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 shadow-sm hover:bg-blue-50"
+																>
+																	<Database className="w-3 h-3" />
+																	<span>Download Generic Tasks dataset</span>
+																</a>
+																<a
+																	href={genericAdminTasksCsvUrl}
+																	download="Generic_Admin_Tasks_100000_rows_.csv"
+																	className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 shadow-sm hover:bg-blue-50"
+																>
+																	<Database className="w-3 h-3" />
+																	<span>Download Generic Dataset (1 Lakhs rows)</span>
+																</a>
+															</div>
+														</div>
 						</div>
 
 						{/* Select Description */}
