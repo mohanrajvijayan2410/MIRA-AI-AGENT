@@ -1,6 +1,6 @@
 # 🍳 MIRA: An Intelligent data Agent
 
-Hosted Link: [https://mira-ai-agent.web.app](https://mira-ai-agent.web.app)
+Hosted Link: [https://mira-ai-agent-web.vercel.app/](https://mira-ai-agent-web.vercel.app/)
 
 **MIRA** is a powerful AI-driven data generation assistant that intelligently selects between different LLMs (Groq & Gemini) to produce structured datas. Designed with LangChain agents, Flask backend, and a Vite + Tailwind CSS frontend, MIRA is a full-stack showcase of modern agentic AI workflows.
 
