@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install:all": "cd frontend && npm install && cd ../api_agent && pip install -r requirements.txt",
-    "dev": "concurrently \"cd frontend && npm run dev\" \"cd api_agent && python main.py\""
+    "install:all": "cd mira_ai_agent && npm install",
+    "dev": "cd mira_ai_agent && npm run dev",
+    "build": "cd mira_ai_agent && npm run build"
   },
   "dependencies": {
     "concurrently": "^7.6.0"
