@@ -5,15 +5,21 @@ import {
 	TogetherResponse,
 	DeepSeekResponse,
 	AIProvider,
+	AIProviderOption,
 } from "../types";
 
 // API Keys
+const GROQ_KEYS = [
+	"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",
+	"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",
+];
+
 const API_KEYS = {
-	groq: "gsk_uI9...CIdNVtK46",
-	gemini: "AIzaS...-AB0Io",
-	mistral: "uZB...iSep8",
-	together: "tgp_v...ArnTR8Lq-g",
-	deepseek: "sk-6cd..7a836e233",
+	groq: GROQ_KEYS[0],
+	gemini: "",
+	mistral: "",
+	together: "",
+	deepseek: "",
 };
 
 const createPrompt = (
@@ -21,201 +27,57 @@ const createPrompt = (
 	actions: string,
 	objects: string
 ): string => {
-	return `Based on the following information, generate clean and concise step-by-step instructions on how to accomplish the task:
+	return `You are MIRA AI Agent for structured task sequencing and dependency analysis.
+Based on the following task information, generate clean and concise step-by-step instructions following the MIRA Protocol.
 
-Description: ${description} (Only classify the instructions as simple instructions. and generate 7 instructions.)
-Actions: ${actions}
-Objects: ${objects}
+Task Description: ${description}
+Available Actions: ${actions}
+Available Objects: ${objects}
 
-For tomato noodles.. generate the instructions in the exact order 1. pick noodle, 2. cook noodle in pot, 3. add cooked noodle to dish
-4. wash tomato, 5. chop tomato, 6. fry tomato in fryer, 7. add fried
-tomato to dish.
+**MIRA Protocol Rules:**
+1. Each instruction must specify the action and object(s).
+2. For each instruction, state the required and resulting object states.
+3. Classify each instruction into one of the MIRA Instruction Types:
+   - Simple Instruction: Single action on object(s). (e.g., Fetch Diagnostic Tool)
+   - Instruction with Purpose: Action stating a goal or intention. (e.g., Initialize Power Supply if you want to test the circuit)
+   - Instruction with Reason: Action stating why it is needed. (e.g., Add lubricant because friction is high)
+   - Instruction in Sequence: Two sequential actions using 'then'. (e.g., Power off system then disconnect cable)
+   - Exclusive Instruction: Choice between alternative objects or actions using 'or'. (e.g., Use Copper Wire or Fiber Cable)
+   - Mandatory Instruction: Both actions must be performed using 'and'. (e.g., Wear safety gear and check power status)
+4. Ensure logical consistency across state transitions between consecutive steps.
 
-You should follow the below two rules:
-
-Important note: Only generate simple instructions and you should strictly classify all statements as "Simple Instructions"
-ONly generate not more than 6 instructions
-**MIRA Protocol:**  
-- Each instruction must specify action and object(s).
-- For each instruction, state the required and resulting object states.
-- Classify each instruction as: Simple Instruction only.
-
- 1. SIMPLE INSTRUCTION:
-    - Generate one action per instruction.
-    - Instructions can include one or more objects.
-    - Examples:
-      • Take pens → TYPE: SIMPLE INSTRUCTION
-      • Take pens using hand → TYPE: SIMPLE INSTRUCTION
-
-    2. INSTRUCTION WITH PURPOSE:
-    - Include a goal or intention behind the action.
-    - Examples:
-      • Take pen if you want to write
-      • Take pen if you have the intention of writing
-      → TYPE: INSTRUCTION WITH PURPOSE
-
-    3. EXCLUSIVE INSTRUCTION (OBJECTS):
-    - Multiple objects given, only one to be chosen.
-    - Example:
-      • Take pen or pencil
-      → TYPE: EXCLUSIVE INSTRUCTION
-
-    4. EXCLUSIVE INSTRUCTION (ACTIONS):
-    - Use 'or' between alternative actions.
-    - Example:
-      • Go by walk or take a car to reach destination
-      → TYPE: EXCLUSIVE INSTRUCTION
-  
-    5. MANDATORY INSTRUCTION:
-    - Both actions must be performed, order does not matter.
-    - Examples:
-      • Take pen and paper 
-      • Write test and be calm 
-      . Add noodles and pick up tomato
-      → TYPE: MANDATORY INSTRUCTION
-
-- For every pair of dependent instructions (i_j, i_{j+1}), ensure there exists at least one object o^* such that o^* ∈ O_j ∩ O_{j+1} and s_j(o^*) = s_{j+1}^{req}(o^*). If not, revise the sequence.
-- Map and explain dependencies between instructions, referencing objects and their states.
-- Present a dependency table or graph.
-- Output the final sequenced plan as an ordered list.
-- If actions can be performed in parallel or iteratively, indicate this clearly and optimize for efficiency.
-**Additionally, choose and apply one of the following sequencing methods as appropriate:**
-
-- **Sequential Completion Method:**  
-  For each object, perform the full sequence of actions before moving to the next object.  
-  For each object (e.g., shirt1, towel2), perform the entire sequence of required actions from start to finish before moving to the next object. This method mimics real-world scenarios where objects are processed one-by-one to completion.
-  Object Processing Order:
-  shirt1 → shirt2 → shirt3 → shirt4 → shirt5 → towel1 → towel2 → towel3 → towel4 → towel5
-
-  *Formula:*  
-  \\[
-  (a_1, o_j) \\rightarrow_i (a_2, o_j) \\rightarrow_i \\ldots \\rightarrow_i (a_n, o_j)
-  \\]  
-  *Example:* wash cup1 → scrub cup1 → rinse cup1; then repeat for cup2, cup3, etc.
-
-- **Step-by-Step Parallel (Iterative) Method:**  
-  For each action, perform it on all objects before moving to the next action.
-  *Formula:*  
-  \\[
-  (a_k, o_1) \\rightarrow_i (a_k, o_2) \\rightarrow_i \\ldots \\rightarrow_i (a_k, o_N)
-  \\]  
-  *Example:* wash cup1, wash cup2, wash cup3; then scrub cup1, scrub cup2, scrub cup3; etc.
-
-If you encounter any sequence that violates the consistency or dependency condition, explicitly state the issue and provide a corrected sequence.
-
-**CRITICAL OUTPUT FORMAT - FOLLOW EXACTLY:**
+**CRITICAL OUTPUT FORMAT - STRICTLY FOLLOW THIS FORMAT:**
 
 #### Stepwise Instructions with Classification
 
-1. [action description]
-   Required state: [object states needed]
-   Resulting state: [object states after action]
-   Type: [instruction type]
-   Dependencies: [step numbers or "none"]
+1. [Action description]
+   Required state: [Object states before step]
+   Resulting state: [Object states after step]
+   Type: [Instruction Type]
+   Dependencies: [Step numbers or "none"]
    Consistency: [Yes/No/N/A]
 
-2. [action description]
-   Required state: [object states needed]
-   Resulting state: [object states after action]
-   Type: [instruction type]
-   Dependencies: [step numbers or "none"]
+2. [Action description]
+   Required state: [Object states before step]
+   Resulting state: [Object states after step]
+   Type: [Instruction Type]
+   Dependencies: [Step numbers or "none"]
    Consistency: [Yes/No/N/A]
-
-[Continue for all steps...]
 
 #### Dependency Table
 
-| Step | Depends On | Objects Involved | Classification              | Consistency Condition Satisfied? |
-|------|------------|------------------|-----------------------------|----------------------------------|
-| 1    | —          | [objects]        | [type]                      | —                                |
-| 2    | [steps]    | [objects]        | [type]                      | [Yes/No]                         |
-| 3    | [steps]    | [objects]        | [type]                      | [Yes/No]                           |
-
-Note: Only classify the instructions as Simple instruction
+| Step | Depends On | Objects Involved | Classification | Consistency Condition Satisfied? |
+|------|------------|------------------|----------------|----------------------------------|
+| 1 | None | [Objects] | Simple Instruction | N/A |
+| 2 | 1 | [Objects] | Instruction in Sequence | Yes |
 
 #### Final Sequenced Plan
 
-1. [step description]
-2. [step description]
-3. [step description]
-[Continue for all steps...]
+1. [Step 1 description]
+2. [Step 2 description]
+3. [Step 3 description]
 
-**Example**
-#### Stepwise Instructions with Classification
-
-description used - Make a dish of beef fried rice, which consists of cooked rice and fried beef.
-
-1. pick noodle
-Required state: noodle is available
-Resulting state: noodle is picked
-Type: Simple Instruction
-Dependencies: none
-Consistency: N/A
-
-2. cook noodle in pot
-Required state: noodle is picked, pot is available
-Resulting state: noodle is cooked, pot is occupied
-Type: Simple Instruction
-Dependencies: none
-Consistency: N/A
-
-3. add cooked noodle to dish
-Required state: noodle is cooked, dish is available
-Resulting state: dish contains noodle
-Type: Simple Instruction
-Dependencies: none
-Consistency: N/A
-
-4. wash tomato
-Required state: tomato is dirty
-Resulting state: tomato is clean
-Type: Simple Instruction
-Dependencies: none
-Consistency: N/A
-
-5. chop tomato
-Required state: tomato is clean
-Resulting state: tomato is chopped
-Type: Simple Instruction
-Dependencies: none
-Consistency: N/A
-
-6. fry tomato in fryer
-Required state: tomato is chopped, fryer is available
-Resulting state: tomato is fried
-Type: Simple Instruction
-Dependencies: none
-Consistency: N/A
-
-7. add fried tomato to dish
-Required state: tomato is fried, dish is available
-Resulting state: dish contains fried tomato
-Type: Simple Instruction
-Dependencies: none
-Consistency: N/A
-
-
-#### Dependency Table 
-
-| Step | Depends On | Objects Involved | Classification              | Consistency Condition Satisfied? |
-|------|------------|------------------|-----------------------------|-------------------------------|
-| 1    | —          | rice             | Simple Instruction          | —                             |
-| 2    | 1          | rice, pot        | Simple Instruction          | Yes                           |
-| 3    | 2          | rice, dish       | Simple Instruction          | Yes                           |
-| 4    | —          | tomato           | Simple Instruction          | —                             |
-...
-
-#### Final Sequenced Plan
-
-1. pick rice
-2. cook rice in pot
-3. add rice to dish
-...
-- If actions can be performed in parallel or iteratively, indicate this clearly and optimize for efficiency.
-
-**Output your answer in the format shown above.**
-
-Generate 5 to 8 steps total. Make step with descriptions clear and actionable while following the exact format shown in the example.`;
+Generate 5 to 8 steps total. Strictly output your answer using the exact section headers and markdown formats shown above.`;
 };
 
 const generateWithGroq = async (
@@ -223,46 +85,63 @@ const generateWithGroq = async (
 	actions: string,
 	objects: string
 ): Promise<string> => {
-	const response = await fetch(
-		"https://api.groq.com/openai/v1/chat/completions",
-		{
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${API_KEYS.groq}`,
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({
-				model: "llama-3.3-70b-versatile",
-				messages: [
-					{
-						role: "system",
-						content:
-							"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
+	let lastError: Error | null = null;
+
+	for (const key of GROQ_KEYS) {
+		try {
+			const response = await fetch(
+				"https://api.groq.com/openai/v1/chat/completions",
+				{
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${key}`,
+						"Content-Type": "application/json",
 					},
-					{
-						role: "user",
-						content: createPrompt(description, actions, objects),
-					},
-				],
-				max_tokens: 1500,
-				temperature: 0.7,
-			}),
+					body: JSON.stringify({
+						model: "qwen/qwen3.8-27b",
+						messages: [
+							{
+								role: "system",
+								content:
+									"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
+							},
+							{
+								role: "user",
+								content: createPrompt(description, actions, objects),
+							},
+						],
+						max_tokens: 1500,
+						temperature: 0.7,
+					}),
+				}
+			);
+
+			if (response.status === 429) {
+				console.warn(
+					`Groq 429 Rate Limit with key ending in ...${key.slice(-6)}. Trying fallback key...`
+				);
+				continue;
+			}
+
+			if (!response.ok) {
+				throw new Error(
+					`Groq API error: ${response.status} ${response.statusText}`
+				);
+			}
+
+			const data: GroqResponse = await response.json();
+
+			if (!data.choices || data.choices.length === 0) {
+				throw new Error("No response from Groq API");
+			}
+
+			return data.choices[0].message.content.trim();
+		} catch (error) {
+			lastError = error instanceof Error ? error : new Error(String(error));
 		}
-	);
-
-	if (!response.ok) {
-		throw new Error(
-			`Groq API error: ${response.status} ${response.statusText}`
-		);
 	}
 
-	const data: GroqResponse = await response.json();
-
-	if (!data.choices || data.choices.length === 0) {
-		throw new Error("No response from Groq API");
-	}
-
-	return data.choices[0].message.content.trim();
+	throw lastError || new Error("Failed to generate instructions with Groq");
 };
 
 const generateWithGemini = async (
@@ -467,55 +346,68 @@ Please provide a realistic time estimate in a clear, concise format. Consider:
 
 Respond with just the time estimate (e.g., "5-10 minutes", "2-3 hours", "30-45 minutes").`;
 
-	try {
-		const response = await fetch(
-			"https://api.groq.com/openai/v1/chat/completions",
-			{
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${API_KEYS.groq}`,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					model: "llama-3.3-70b-versatile",
-					messages: [
-						{
-							role: "system",
-							content:
-								"You are a helpful assistant that provides accurate time estimates for tasks. Always respond with just the time estimate in a clear format.",
-						},
-						{
-							role: "user",
-							content: prompt,
-						},
-					],
-					max_tokens: 100,
-					temperature: 0.3,
-				}),
-			}
-		);
+	let lastError: Error | null = null;
 
-		if (!response.ok) {
-			throw new Error(
-				`Groq API error: ${response.status} ${response.statusText}`
+	for (const key of GROQ_KEYS) {
+		try {
+			const response = await fetch(
+				"https://api.groq.com/openai/v1/chat/completions",
+				{
+					method: "POST",
+					headers: {
+						Authorization: `Bearer ${key}`,
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						model: "qwen/qwen3.8-27b",
+						messages: [
+							{
+								role: "system",
+								content:
+									"You are a helpful assistant that provides accurate time estimates for tasks. Always respond with just the time estimate in a clear format.",
+							},
+							{
+								role: "user",
+								content: prompt,
+							},
+						],
+						max_tokens: 100,
+						temperature: 0.3,
+					}),
+				}
 			);
+
+			if (response.status === 429) {
+				console.warn(
+					`Groq 429 Rate Limit in duration estimate with key ending in ...${key.slice(-6)}. Trying fallback key...`
+				);
+				continue;
+			}
+
+			if (!response.ok) {
+				throw new Error(
+					`Groq API error: ${response.status} ${response.statusText}`
+				);
+			}
+
+			const data: GroqResponse = await response.json();
+
+			if (!data.choices || data.choices.length === 0) {
+				throw new Error("No response from Groq API");
+			}
+
+			return data.choices[0].message.content.trim();
+		} catch (error) {
+			lastError = error instanceof Error ? error : new Error(String(error));
 		}
-
-		const data: GroqResponse = await response.json();
-
-		if (!data.choices || data.choices.length === 0) {
-			throw new Error("No response from Groq API");
-		}
-
-		return data.choices[0].message.content.trim();
-	} catch (error) {
-		console.error("Error generating duration estimate:", error);
-		throw new Error(
-			error instanceof Error
-				? `Failed to generate duration estimate: ${error.message}`
-				: "Failed to generate duration estimate"
-		);
 	}
+
+	console.error("Error generating duration estimate:", lastError);
+	throw new Error(
+		lastError instanceof Error
+			? `Failed to generate duration estimate: ${lastError.message}`
+			: "Failed to generate duration estimate"
+	);
 };
 
 export const generateInstructions = async (
