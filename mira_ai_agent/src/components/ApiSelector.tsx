@@ -1,9 +1,9 @@
 import React from 'react';
 import { Cloud } from 'lucide-react';
-import { AIProvider } from '../types';
+import { AIProviderConfig } from '../types';
 
 interface ApiSelectorProps {
-  providers: AIProvider[];
+  providers: AIProviderConfig[];
   value: string;
   onChange: (providerId: string) => void;
 }
