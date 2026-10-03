@@ -1,28 +1,34 @@
-import { AIProvider } from '../types';
+import { AIProviderConfig } from '../types';
 
-export const AI_PROVIDERS: AIProvider[] = [
+export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     id: 'groq',
     name: 'Groq',
-    apiKey: 'gsk_u...UECIdNVtK46',
+    apiKey: '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',
     endpoint: 'https://api.groq.com/openai/v1/chat/completions'
   },
   {
     id: 'gemini',
     name: 'Gemini',
-    apiKey: 'AIza....FxNOIn6gw',
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
+    apiKey: '',
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
   },
   {
     id: 'mistral',
     name: 'Mistral',
-    apiKey: 'cUao1..qMdJl0F',
-  endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
+    apiKey: '',
+    endpoint: 'https://api.mistral.ai/v1/chat/completions'
   },
   {
     id: 'together',
     name: 'Together AI',
-    apiKey: 'tgp_v1_...A5pzQ_VD4',
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
+    apiKey: '',
+    endpoint: 'https://api.together.xyz/v1/chat/completions'
+  },
+  {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    apiKey: '',
+    endpoint: 'https://api.deepseek.com/v1/chat/completions'
   }
 ];
