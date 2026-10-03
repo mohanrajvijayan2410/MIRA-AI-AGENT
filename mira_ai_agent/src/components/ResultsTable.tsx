@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from "react";
 import {
-	CheckCircle,
 	XCircle,
-	FileText,
 	Target,
 	Zap,
 	BookOpen,
 	Loader2,
 	AlertCircle,
-	Tag,
 	Settings,
 	Clock,
+	Pencil,
+	Check,
+	X,
 } from "lucide-react";
 import { SearchResult, AIProvider } from "../types";
-import {
-	generateInstructions,
-	generateDurationEstimate,
-} from "../ObjActSeq/aiProviders";
+import { generateInstructions } from "../ObjActSeq/aiProviders";
 import { AIProviderSelector } from "./AIProviderSelector";
 
 interface TaskDetailsProps {
@@ -39,127 +36,123 @@ export const TaskDetails: React.FC<TaskDetailsProps> = ({
 	if (!hasSearched || !result) return null;
 	const { item } = result;
 
+	const actionList = item.Actions
+		? item.Actions.split(/,\s*|\n/).map((a) => a.trim()).filter(Boolean)
+		: [];
+	const objectList = item.Objects
+		? item.Objects.split(/,\s*|\n/).map((o) => o.trim()).filter(Boolean)
+		: [];
+
 	return (
-		<div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden w-full max-w-4xl">
-			<div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-				<h3 className="text-xl font-semibold text-white">Task Details</h3>
+		<div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden w-full">
+			<div className="bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-3.5">
+				<h3 className="text-lg font-semibold text-white">Task Details</h3>
 			</div>
 
-			<div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+			<div className="divide-y divide-gray-100">
 				{/* Duration Box */}
-				<div className="p-6 hover:bg-gray-50 transition-colors">
-					<div className="h-full flex flex-col">
-						<div className="flex items-start gap-4 mb-4">
-							<div className="p-2 bg-blue-100 rounded-lg flex-shrink-0">
-								<Clock className="w-5 h-5 text-blue-600" />
+				<div className="p-4 hover:bg-gray-50/70 transition-colors">
+					<div className="flex items-center justify-between mb-2">
+						<div className="flex items-center gap-2">
+							<div className="p-1.5 bg-blue-100 rounded-lg text-blue-600 flex-shrink-0">
+								<Clock className="w-4 h-4" />
 							</div>
-							<div className="flex-1 min-w-0">
-								<div className="flex flex-col items-start mb-3">
-									<h4 className="font-semibold text-gray-900 text-sm">
-										Duration
-									</h4>
-									{!isGeneratingDuration && !durationError && duration && (
-										<button
-											onClick={generateDuration}
-											className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center gap-1 mt-1"
-										>
-											<Settings className="w-3 h-3" />
-											Regenerate
-										</button>
-									)}
+							<h4 className="font-semibold text-gray-900 text-sm">Duration</h4>
+						</div>
+						{!isGeneratingDuration && !durationError && duration && (
+							<button
+								onClick={generateDuration}
+								className="text-xs text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center gap-1"
+							>
+								<Settings className="w-3 h-3" />
+								Regenerate
+							</button>
+						)}
+					</div>
+
+					<div className="pt-0.5">
+						{isGeneratingDuration && (
+							<div className="flex items-center gap-2 text-blue-600 text-xs py-1">
+								<Loader2 className="w-3.5 h-3.5 animate-spin flex-shrink-0" />
+								<span className="font-medium">Estimating complexity...</span>
+							</div>
+						)}
+
+						{durationError && (
+							<div className="bg-red-50 border border-red-200 rounded-lg p-2.5 text-xs text-red-700 flex items-start gap-2">
+								<AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+								<div className="flex-1 min-w-0">
+									<p className="font-medium">Failed to estimate</p>
+									<p className="text-red-600 text-[11px] break-words mt-0.5">{durationError}</p>
+									<button
+										onClick={generateDuration}
+										className="mt-1.5 text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-0.5 rounded transition-colors"
+									>
+										Try Again
+									</button>
 								</div>
 							</div>
-						</div>
+						)}
 
-						<div className="flex-1 flex items-center">
-							{isGeneratingDuration && (
-								<div className="flex items-center gap-3 w-full">
-									<Loader2 className="w-4 h-4 text-blue-600 animate-spin flex-shrink-0" />
-									<div className="min-w-0">
-										<p className="text-blue-700 font-medium text-sm">
-											Estimating...
-										</p>
-										<p className="text-xs text-blue-600">
-											Analyzing complexity
-										</p>
-									</div>
-								</div>
-							)}
-
-							{durationError && (
-								<div className="bg-red-50 border border-red-200 rounded-lg p-3 w-full">
-									<div className="flex items-start gap-2">
-										<AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
-										<div className="min-w-0">
-											<p className="text-red-800 font-medium text-sm">
-												Failed to estimate
-											</p>
-											<p className="text-xs text-red-600 mt-1 break-words">
-												{durationError}
-											</p>
-											<button
-												onClick={generateDuration}
-												className="mt-2 text-xs bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded-lg transition-colors"
-											>
-												Try Again
-											</button>
-										</div>
-									</div>
-								</div>
-							)}
-
-							{duration && !isGeneratingDuration && !durationError && (
-								<div className="w-full">
-									<p className="text-gray-800 font-semibold text-lg break-words">
-										{duration}
-									</p>
-								</div>
-							)}
-						</div>
+						{duration && !isGeneratingDuration && !durationError && (
+							<p className="text-gray-800 font-bold text-base leading-tight break-words">
+								{duration}
+							</p>
+						)}
 					</div>
 				</div>
 
 				{/* Actions Box */}
-				<div className="p-6 hover:bg-gray-50 transition-colors">
-					<div className="h-full flex flex-col">
-						<div className="flex items-start gap-4 mb-4">
-							<div className="p-2 bg-green-100 rounded-lg flex-shrink-0">
-								<Zap className="w-5 h-5 text-green-600" />
-							</div>
-							<div className="flex-1 min-w-0">
-								<h4 className="font-semibold text-gray-900 text-sm">Actions</h4>
-							</div>
+				<div className="p-4 hover:bg-gray-50/70 transition-colors">
+					<div className="flex items-center gap-2 mb-2">
+						<div className="p-1.5 bg-green-100 rounded-lg text-green-600 flex-shrink-0">
+							<Zap className="w-4 h-4" />
 						</div>
+						<h4 className="font-semibold text-gray-900 text-sm">Actions</h4>
+					</div>
 
-						<div className="flex-1 flex items-start">
-							<div className="w-full">
-								<p className="text-gray-700 text-sm leading-relaxed break-words whitespace-pre-wrap">
-									{item.Actions}
-								</p>
-							</div>
-						</div>
+					<div className="flex flex-wrap gap-1.5">
+						{actionList.length > 0 ? (
+							actionList.map((action, idx) => (
+								<span
+									key={idx}
+									className="px-2.5 py-1 bg-green-50 text-green-700 border border-green-200 rounded-md text-xs font-medium break-all"
+								>
+									{action}
+								</span>
+							))
+						) : (
+							<span className="text-gray-500 text-xs italic">
+								{item.Actions || "None"}
+							</span>
+						)}
 					</div>
 				</div>
 
 				{/* Objects Box */}
-				<div className="p-6 hover:bg-gray-50 transition-colors">
-					<div className="h-full flex flex-col">
-						<div className="flex items-start gap-4 mb-4">
-							<div className="p-2 bg-purple-100 rounded-lg flex-shrink-0">
-								<Target className="w-5 h-5 text-purple-600" />
-							</div>
-							<div className="flex-1 min-w-0">
-								<h4 className="font-semibold text-gray-900 text-sm">Objects</h4>
-							</div>
+				<div className="p-4 hover:bg-gray-50/70 transition-colors">
+					<div className="flex items-center gap-2 mb-2">
+						<div className="p-1.5 bg-purple-100 rounded-lg text-purple-600 flex-shrink-0">
+							<Target className="w-4 h-4" />
 						</div>
+						<h4 className="font-semibold text-gray-900 text-sm">Objects</h4>
+					</div>
 
-						<div className="flex-1 flex items-start">
-							<div className="w-full">
-								<p className="text-gray-700 text-sm leading-relaxed break-words whitespace-pre-wrap">
-									{item.Objects}
-								</p>
-							</div>
-						</div>
+					<div className="flex flex-wrap gap-1.5">
+						{objectList.length > 0 ? (
+							objectList.map((object, idx) => (
+								<span
+									key={idx}
+									className="px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-200 rounded-md text-xs font-medium break-all"
+								>
+									{object}
+								</span>
+							))
+						) : (
+							<span className="text-gray-500 text-xs italic">
+								{item.Objects || "None"}
+							</span>
+						)}
 					</div>
 				</div>
 			</div>
@@ -185,14 +178,16 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 		null
 	);
 	const [selectedProvider, setSelectedProvider] = useState<AIProvider>("groq");
-	const [duration, setDuration] = useState<string>("");
-	const [isGeneratingDuration, setIsGeneratingDuration] = useState(false);
-	const [durationError, setDurationError] = useState<string | null>(null);
+	const [customStepTypes, setCustomStepTypes] = useState<Record<number, string>>({});
+	const [editingStepIndex, setEditingStepIndex] = useState<number | null>(null);
+	const [editingTagText, setEditingTagText] = useState<string>("");
 
 	useEffect(() => {
 		if (result && result.item) {
+			setCustomStepTypes({});
+			setEditingStepIndex(null);
+			setEditingTagText("");
 			generateAIInstructions();
-			generateDuration();
 		}
 	}, [result]);
 
@@ -202,6 +197,9 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 		setIsGeneratingInstructions(true);
 		setInstructionsError(null);
 		setInstructions("");
+		setCustomStepTypes({});
+		setEditingStepIndex(null);
+		setEditingTagText("");
 
 		try {
 			const generatedInstructions = await generateInstructions(
@@ -222,41 +220,15 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 		}
 	};
 
-	const generateDuration = async () => {
-		if (!result?.item) return;
-
-		setIsGeneratingDuration(true);
-		setDurationError(null);
-		setDuration("");
-
-		try {
-			const estimatedDuration = await generateDurationEstimate(
-				result.item.Description,
-				result.item.Actions,
-				result.item.Objects
-			);
-			setDuration(estimatedDuration);
-		} catch (error) {
-			setDurationError(
-				error instanceof Error
-					? error.message
-					: "Failed to generate duration estimate"
-			);
-		} finally {
-			setIsGeneratingDuration(false);
-		}
-	};
-
 	const handleProviderChange = (provider: AIProvider) => {
 		setSelectedProvider(provider);
-		// Auto-regenerate instructions when provider changes
-		if (result?.item && instructions) {
+		if (result?.item) {
 			generateAIInstructions();
 		}
 	};
 
 	const getStepTypeColor = (stepType: string) => {
-		const type = stepType.toLowerCase();
+		const type = (stepType || "").toLowerCase();
 		if (type.includes("simple")) {
 			return "bg-blue-100 text-blue-700 border-blue-200";
 		} else if (type.includes("goal") || type.includes("purpose")) {
@@ -285,11 +257,12 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 				.trim()
 				.split("\n")
 				.filter((line) => line.trim());
-			const title = lines[0]?.trim();
+			const rawTitle = lines[0]?.trim() || "";
+			const cleanTitle = rawTitle.replace(/[*#_`]/g, "").trim().toLowerCase();
 
 			if (
-				title === "Stepwise Instructions with Classification" ||
-				title.includes("Stepwise Instructions")
+				cleanTitle.includes("stepwise instructions") ||
+				cleanTitle.includes("classification")
 			) {
 				// Parse stepwise instructions
 				const steps = parseStepwiseInstructions(lines.slice(1));
@@ -302,7 +275,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 						<div>{steps}</div>
 					</div>
 				);
-			} else if (title === "Dependency Table") {
+			} else if (cleanTitle.includes("dependency table")) {
 				// Parse dependency table
 				const dependencyData = parseDependencyTable(lines.slice(1));
 				formattedSections.push(
@@ -335,61 +308,65 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 										</tr>
 									</thead>
 									<tbody className="bg-white divide-y divide-gray-200">
-										{dependencyData.map((row, rowIndex) => (
-											<tr key={rowIndex} className="hover:bg-gray-50">
-												<td className="px-4 py-3 whitespace-nowrap">
-													<div className="flex items-center">
-														<div className="w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold mr-2">
-															{row.step}
+										{dependencyData.map((row, rowIndex) => {
+											const stepNum = parseInt(row.step, 10);
+											const classification =
+												(!isNaN(stepNum) && customStepTypes[stepNum]) ||
+												row.classification;
+
+											return (
+												<tr key={rowIndex} className="hover:bg-gray-50">
+													<td className="px-4 py-3 whitespace-nowrap">
+														<div className="flex items-center">
+															<div className="w-6 h-6 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xs font-bold mr-2">
+																{row.step}
+															</div>
+															<span className="text-sm font-medium text-gray-900">
+																{row.step}
+															</span>
 														</div>
-														<span className="text-sm font-medium text-gray-900">
-															{row.step}
+													</td>
+													<td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+														{row.dependsOn}
+													</td>
+													<td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
+														{row.objects}
+													</td>
+													<td className="px-4 py-3 whitespace-nowrap">
+														<span
+															className={`px-2 py-1 rounded-full text-xs font-medium border ${getStepTypeColor(
+																classification
+															)}`}
+														>
+															{classification}
 														</span>
-													</div>
-												</td>
-												<td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-													{row.dependsOn}
-												</td>
-												<td className="px-4 py-3 whitespace-nowrap text-sm text-gray-700">
-													{row.objects}
-												</td>
-												<td className="px-4 py-3 whitespace-nowrap">
-													<span
-														className={`
-                            px-2 py-1 rounded-full text-xs font-medium border
-                            ${getStepTypeColor(row.classification)}
-                          `}
-													>
-														{row.classification}
-													</span>
-												</td>
-												<td className="px-4 py-3 whitespace-nowrap">
-													<span
-														className={`
-                            px-2 py-1 rounded-full text-xs font-medium
-                            ${
-															row.consistency === "Yes"
-																? "bg-green-100 text-green-700"
-																: row.consistency === "No"
-																? "bg-red-100 text-red-700"
-																: "bg-gray-100 text-gray-700"
-														}
-                          `}
-													>
-														{row.consistency}
-													</span>
-												</td>
-											</tr>
-										))}
+													</td>
+													<td className="px-4 py-3 whitespace-nowrap">
+														<span
+															className={`px-2 py-1 rounded-full text-xs font-medium ${
+																row.consistency === "Yes"
+																	? "bg-green-100 text-green-700"
+																	: row.consistency === "No"
+																	? "bg-red-100 text-red-700"
+																	: "bg-gray-100 text-gray-700"
+															}`}
+														>
+															{row.consistency}
+														</span>
+													</td>
+												</tr>
+											);
+										})}
 									</tbody>
 								</table>
 							</div>
 						</div>
-
-						{/* Final Sequenced Plan */}
 					</div>
 				);
-			} else if (title === "Final Sequenced Plan") {
+			} else if (
+				cleanTitle.includes("final sequenced plan") ||
+				cleanTitle.includes("final plan")
+			) {
 				// Parse final plan
 				const planSteps = parseFinalPlan(lines.slice(1));
 				formattedSections.push(
@@ -401,7 +378,10 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 						<div className="bg-white rounded-lg border border-gray-200 p-6">
 							<ol className="list-decimal list-inside space-y-2">
 								{planSteps.map((step, stepIndex) => (
-									<li key={stepIndex} className="text-gray-800 leading-relaxed">
+									<li
+										key={stepIndex}
+										className="text-gray-800 leading-relaxed"
+									>
 										{step}
 									</li>
 								))}
@@ -422,15 +402,19 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 
 		lines.forEach((line) => {
 			const trimmedLine = line.trim();
+			const cleanLine = trimmedLine
+				.replace(/^\*+\s*/, "")
+				.replace(/\*\*/g, "")
+				.trim();
 
-			if (trimmedLine.match(/^\d+\./)) {
+			if (cleanLine.match(/^\d+\./)) {
 				// New step
 				if (currentStep) {
 					steps.push(renderStep(currentStep, stepNumber));
 				}
 				stepNumber++;
 				currentStep = {
-					description: trimmedLine.replace(/^\d+\.\s*/, ""),
+					description: cleanLine.replace(/^\d+\.\s*/, ""),
 					requiredState: "",
 					resultingState: "",
 					type: "",
@@ -438,32 +422,32 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 					consistency: "",
 					reason: "",
 				};
-			} else if (trimmedLine.startsWith("Required state:")) {
+			} else if (cleanLine.toLowerCase().startsWith("required state:")) {
 				if (currentStep)
-					currentStep.requiredState = trimmedLine
-						.replace("Required state:", "")
+					currentStep.requiredState = cleanLine
+						.replace(/^required state:\s*/i, "")
 						.trim();
-			} else if (trimmedLine.startsWith("Resulting state:")) {
+			} else if (cleanLine.toLowerCase().startsWith("resulting state:")) {
 				if (currentStep)
-					currentStep.resultingState = trimmedLine
-						.replace("Resulting state:", "")
+					currentStep.resultingState = cleanLine
+						.replace(/^resulting state:\s*/i, "")
 						.trim();
-			} else if (trimmedLine.startsWith("Type:")) {
+			} else if (cleanLine.toLowerCase().startsWith("type:")) {
 				if (currentStep)
-					currentStep.type = trimmedLine.replace("Type:", "").trim();
-			} else if (trimmedLine.startsWith("Dependencies:")) {
+					currentStep.type = cleanLine.replace(/^type:\s*/i, "").trim();
+			} else if (cleanLine.toLowerCase().startsWith("dependencies:")) {
 				if (currentStep)
-					currentStep.dependencies = trimmedLine
-						.replace("Dependencies:", "")
+					currentStep.dependencies = cleanLine
+						.replace(/^dependencies:\s*/i, "")
 						.trim();
-			} else if (trimmedLine.startsWith("Consistency:")) {
+			} else if (cleanLine.toLowerCase().startsWith("consistency:")) {
 				if (currentStep)
-					currentStep.consistency = trimmedLine
-						.replace("Consistency:", "")
+					currentStep.consistency = cleanLine
+						.replace(/^consistency:\s*/i, "")
 						.trim();
-			} else if (trimmedLine.startsWith("Reason:")) {
+			} else if (cleanLine.toLowerCase().startsWith("reason:")) {
 				if (currentStep)
-					currentStep.reason = trimmedLine.replace("Reason:", "").trim();
+					currentStep.reason = cleanLine.replace(/^reason:\s*/i, "").trim();
 			}
 		});
 
@@ -472,80 +456,155 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 			steps.push(renderStep(currentStep, stepNumber));
 		}
 
-		// Return horizontal layout with all steps in a single row
-		return <div className="grid grid-cols-1 lg:grid-cols-6 gap-4">{steps}</div>;
+		// Responsive grid layout that prevents cards and text from squishing
+		return (
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+				{steps}
+			</div>
+		);
 	};
 
 	const renderStep = (step: any, stepNumber: number) => {
+		const currentType =
+			customStepTypes[stepNumber] || step.type || "Simple Instruction";
+		const isEditing = editingStepIndex === stepNumber;
+
+		const handleStartEdit = () => {
+			setEditingStepIndex(stepNumber);
+			setEditingTagText(currentType);
+		};
+
+		const handleSaveEdit = () => {
+			const trimmed = editingTagText.trim();
+			if (trimmed) {
+				setCustomStepTypes((prev) => ({
+					...prev,
+					[stepNumber]: trimmed,
+				}));
+			}
+			setEditingStepIndex(null);
+		};
+
+		const handleCancelEdit = () => {
+			setEditingStepIndex(null);
+			setEditingTagText("");
+		};
+
 		return (
 			<div
 				key={stepNumber}
-				className="bg-white rounded-lg border border-gray-200 p-4"
+				className="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between space-y-4"
 			>
-				<div className="flex flex-col items-center mb-3">
-					<div className="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-bold mb-2">
-						{stepNumber}
+				<div>
+					{/* Step Header */}
+					<div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
+						<div className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 shadow-sm">
+							{stepNumber}
+						</div>
+						<h6 className="font-semibold text-gray-900 text-sm leading-snug break-words">
+							{step.description}
+						</h6>
 					</div>
-					<h6 className="font-semibold text-gray-900 text-center text-sm">
-						{step.description}
-					</h6>
-				</div>
 
-				<div className="space-y-3 text-xs">
-					<div className="grid grid-cols-2 gap-2">
-						<div>
-							<span className="font-medium text-gray-700 block">
+					{/* Required & Resulting States Stacked */}
+					<div className="space-y-2.5 text-xs mb-3">
+						<div className="bg-amber-50/70 border border-amber-200/70 rounded-lg p-2.5">
+							<span className="font-semibold text-amber-900 block text-[11px] uppercase tracking-wider mb-1">
 								Required State:
 							</span>
-							<p className="text-gray-600 mt-1">
+							<p className="text-gray-700 leading-relaxed break-words">
 								{step.requiredState || "N/A"}
 							</p>
 						</div>
-						<div>
-							<span className="font-medium text-gray-700 block">
+
+						<div className="bg-blue-50/70 border border-blue-200/70 rounded-lg p-2.5">
+							<span className="font-semibold text-blue-900 block text-[11px] uppercase tracking-wider mb-1">
 								Resulting State:
 							</span>
-							<p className="text-gray-600 mt-1">
+							<p className="text-gray-700 leading-relaxed break-words">
 								{step.resultingState || "N/A"}
 							</p>
 						</div>
 					</div>
+				</div>
 
-					<div>
-						<span className="font-medium text-gray-700 block">
-							Dependencies:
-						</span>
-						<p className="text-gray-600 mt-1">{step.dependencies || "none"}</p>
-					</div>
-
-					<div className="flex items-center justify-center">
-						<span
-							className={`
-              px-2 py-1 rounded-full text-xs font-medium border
-              ${getStepTypeColor(step.type)}
-            `}
-						>
-							{step.type}
+				{/* Metadata & Badges */}
+				<div className="space-y-2.5 pt-2 border-t border-gray-100 text-xs">
+					<div className="flex items-center justify-between text-gray-600">
+						<span className="font-medium text-gray-500">Dependencies:</span>
+						<span className="font-semibold text-gray-800 break-words">
+							{step.dependencies || "none"}
 						</span>
 					</div>
 
-					<div className="flex items-center justify-center">
-						<span className="text-xs font-medium text-gray-700 mr-2">
+					<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+						{isEditing ? (
+							<div className="flex items-center gap-1.5 w-full">
+								<input
+									type="text"
+									value={editingTagText}
+									onChange={(e) => setEditingTagText(e.target.value)}
+									onKeyDown={(e) => {
+										if (e.key === "Enter") {
+											handleSaveEdit();
+										} else if (e.key === "Escape") {
+											handleCancelEdit();
+										}
+									}}
+									placeholder="Type instruction tag..."
+									className="text-xs bg-white border border-blue-500 rounded-lg px-2.5 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium text-gray-800 shadow-sm flex-1 min-w-0"
+									autoFocus
+								/>
+								<button
+									type="button"
+									onClick={handleSaveEdit}
+									className="p-1 rounded-md bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 transition-colors flex-shrink-0"
+									title="Save tag (Enter)"
+								>
+									<Check className="w-3.5 h-3.5" />
+								</button>
+								<button
+									type="button"
+									onClick={handleCancelEdit}
+									className="p-1 rounded-md bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 transition-colors flex-shrink-0"
+									title="Cancel (Esc)"
+								>
+									<X className="w-3.5 h-3.5" />
+								</button>
+							</div>
+						) : (
+							<div className="inline-flex items-center gap-1 flex-wrap">
+								<span
+									className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStepTypeColor(
+										currentType
+									)}`}
+								>
+									<span className="break-words">{currentType}</span>
+									<button
+										type="button"
+										onClick={handleStartEdit}
+										title="Edit tag"
+										className="p-0.5 rounded hover:bg-black/10 text-current transition-colors opacity-75 hover:opacity-100 focus:outline-none"
+									>
+										<Pencil className="w-3 h-3" />
+									</button>
+								</span>
+							</div>
+						)}
+
+						<span className="flex items-center gap-1.5 text-xs font-medium text-gray-600 flex-shrink-0">
 							Consistency:
-						</span>
-						<span
-							className={`
-              px-2 py-1 rounded-full text-xs font-medium
-              ${
-								step.consistency === "Yes"
-									? "bg-green-100 text-green-700"
-									: step.consistency === "No"
-									? "bg-red-100 text-red-700"
-									: "bg-gray-100 text-gray-700"
-							}
-            `}
-						>
-							{step.consistency || "N/A"}
+							<span
+								className={`px-2 py-0.5 rounded-md text-xs font-semibold ${
+									step.consistency?.toLowerCase().includes("yes")
+										? "bg-green-100 text-green-800"
+										: step.consistency?.toLowerCase().includes("no")
+										? "bg-red-100 text-red-800"
+										: "bg-gray-100 text-gray-700"
+								}`}
+							>
+								{step.consistency || "N/A"}
+							</span>
 						</span>
 					</div>
 				</div>
