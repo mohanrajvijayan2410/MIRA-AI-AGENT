@@ -40,9 +40,12 @@ export interface ComparisonResponse {
 }
 
 export class IterativeService {
-	private apiKey = "gsk_uI99o.....K46";
+	private apiKeys = [
+		"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",
+		"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",
+	];
 
-	async callSequentialMethod(task: string): Promise<SequentialMethodResponse> {
+	async callSequentialMethod(task: string): Promise<string> {
 		const prompt = `You are a task planning specialist. I need you to break down the following task into a structured, step-by-step plan using the Sequential Completion Method.
 
 **Sequential Completion Method**: Complete each object's full process before starting the next object. For each object (e.g., shirt1, towel2), perform the entire sequence of required actions from start to finish before moving to the next object. This method mimics real-world scenarios where objects are processed one-by-one to completion.
@@ -184,7 +187,7 @@ The table also should be generated like this and should be strictly followed.
 		return this.makeApiCall(prompt);
 	}
 
-	async callParallelMethod(task: string): Promise<ParallelMethodResponse> {
+	async callParallelMethod(task: string): Promise<string> {
 		const prompt = `You are a task planning specialist. I need you to break down the following task into a structured, step-by-step plan using the Step-by-Step Parallel Method.
 
 **Step-by-Step Parallel Method**: Group all similar actions together (e.g., gather all items first, then process all items in parallel steps). For each action, perform it on all objects before moving to the next action.
@@ -408,7 +411,7 @@ The format should be strictly of this format, the response should be strictly fo
 
 		return this.makeApiCall(prompt);
 	}
-		async callFeatureComparison(task: string): Promise<ParallelMethodResponse> {
+	async callFeatureComparison(task: string): Promise<string> {
 		const prompt = `You should generate the entire table with respect to the task name given below in the following table format
 
 Task: "${task}"
@@ -487,53 +490,85 @@ Task: "${task}"
 		}
 	}
 
-	private async makeApiCall(prompt: string): Promise<string> {
-		try {
-			const response = await fetch(
-				"https://api.groq.com/openai/v1/chat/completions",
-				{
-					method: "POST",
-					headers: {
-						Authorization: `Bearer ${this.apiKey}`,
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						model: "llama-3.3-70b-versatile",
-						messages: [
+	private async makeApiCall(prompt: string, maxRetries = 2): Promise<string> {
+		const models = [
+			"qwen/qwen3.8-27b",
+			"openai/gpt-oss-20b",
+			"openai/gpt-oss-120b",
+		];
+		let lastError: Error | null = null;
+
+		for (const key of this.apiKeys) {
+			for (const model of models) {
+				for (let attempt = 0; attempt < maxRetries; attempt++) {
+					try {
+						const response = await fetch(
+							"https://api.groq.com/openai/v1/chat/completions",
 							{
-								role: "system",
-								content:
-									"You are a helpful assistant that creates detailed task execution plans. Always follow the exact formatting requirements provided by the user.",
-							},
-							{
-								role: "user",
-								content: prompt,
-							},
-						],
-						max_tokens: 2000,
-						temperature: 0.7,
-					}),
+								method: "POST",
+								headers: {
+									Authorization: `Bearer ${key}`,
+									"Content-Type": "application/json",
+								},
+								body: JSON.stringify({
+									model,
+									messages: [
+										{
+											role: "system",
+											content:
+												"You are a helpful assistant that creates detailed task execution plans. Always follow the exact formatting requirements provided by the user.",
+										},
+										{
+											role: "user",
+											content: prompt,
+										},
+									],
+									max_tokens: 1500,
+									temperature: 0.7,
+								}),
+							}
+						);
+
+						if (response.status === 429) {
+							// Rate limit hit on this key, warn and attempt fallback
+							console.warn(
+								`Groq 429 Rate Limit on model ${model} with key ending in ...${key.slice(-6)}. Trying next key/model...`
+							);
+							// Break out of retry loop for this key to immediately switch to next key/model
+							break;
+						}
+
+						if (!response.ok) {
+							throw new Error(
+								`API error: ${response.status} ${response.statusText}`
+							);
+						}
+
+						const data = await response.json();
+
+						if (!data.choices || data.choices.length === 0) {
+							throw new Error("No response from API");
+						}
+
+						return data.choices[0].message.content.trim();
+					} catch (error) {
+						lastError =
+							error instanceof Error ? error : new Error(String(error));
+						if (attempt < maxRetries - 1) {
+							await new Promise((resolve) =>
+								setTimeout(resolve, 800 * (attempt + 1))
+							);
+						}
+					}
 				}
-			);
-
-			if (!response.ok) {
-				throw new Error(`API error: ${response.status} ${response.statusText}`);
 			}
-
-			const data = await response.json();
-
-			if (!data.choices || data.choices.length === 0) {
-				throw new Error("No response from API");
-			}
-
-			return data.choices[0].message.content.trim();
-		} catch (error) {
-			console.error("Error making API call:", error);
-			throw new Error(
-				error instanceof Error
-					? `Failed to generate plan: ${error.message}`
-					: "Failed to generate plan"
-			);
 		}
+
+		console.error("Error making API call after trying all keys:", lastError);
+		throw new Error(
+			lastError instanceof Error
+				? `Failed to generate plan: ${lastError.message}`
+				: "Failed to generate plan"
+		);
 	}
 }
