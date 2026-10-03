@@ -3,7 +3,6 @@ import { FileText, Copy, CheckCircle, Clock, ArrowRight, CheckSquare, AlertCircl
 import { PlanRenderer } from './PlanRenderer';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonResult, IterativeMethodResponse, FeatureComparisonResult } from '../types';
-import { resolve } from 'path';
 
 interface OutputDisplayProps {
   content: string;
@@ -146,7 +145,7 @@ export const OutputDisplay: React.FC<OutputDisplayProps> = ({
         ) : iterativeResponse ? (
           <IterativePlanRenderer response={iterativeResponse} />
         ) : (
-          <PlanRenderer content={iterativeResponse} />
+          <PlanRenderer content={content} />
         )}
       </div>
     </div>
@@ -203,28 +202,12 @@ const FeatureComparisonTable: React.FC<{ featureComparison: FeatureComparisonRes
 };
 
 // New component for iterative method responses
-const IterativePlanRenderer: React.FC<{ response: IterativeMethodResponse }> = ({ response }) => {
-  const getMethodColor = (method: string) => {
-    return 'from-gray-500 to-gray-600';
-  };
-  console.log(response);
-
-  const getInstructionTypeColor = (type: string) => {
-    if (type.toLowerCase().includes('simple')) return 'from-green-500 to-emerald-500';
-    if (type.toLowerCase().includes('purpose')) return 'from-blue-500 to-cyan-500';
-    if (type.toLowerCase().includes('mandatory')) return 'from-red-500 to-pink-500';
-    if (type.toLowerCase().includes('conditional')) return 'from-purple-500 to-violet-500';
-    return 'from-orange-500 to-amber-500';
-  };
+const IterativePlanRenderer: React.FC<{ response: IterativeMethodResponse | string }> = ({ response }) => {
+  const htmlContent = typeof response === 'string' ? response : (response?.generated || JSON.stringify(response, null, 2));
 
   return (
     <div className="p-4 sm:p-6 space-y-6">
-      {/* Header Section */}
-
-
-      <div className="prose max-w-full" dangerouslySetInnerHTML={{ __html: response }}></div>
-
-
+      <div className="prose max-w-full" dangerouslySetInnerHTML={{ __html: htmlContent }}></div>
     </div>
   );
 };
