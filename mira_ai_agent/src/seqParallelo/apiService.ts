@@ -1,56 +1,78 @@
-import { AIProvider } from "../types";
+import { AIProviderConfig } from "../types";
 
 // API Keys - hardcoded for direct usage
+const GROQ_KEYS = [
+	"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",
+	"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",
+];
+
 const API_KEYS = {
-	groq: "gsk_....6",
-	gemini: "AIza...w",
-	mistral: "cU...Jl0F",
-	together: "tgp_v1_...Q_VD4",
-	deepseek: "sk-28...e318",
+	groq: GROQ_KEYS[0],
+	gemini: "",
+	mistral: "",
+	together: "",
+	deepseek: "",
 };
 
 export class ApiService {
 	private async callGroq(prompt: string): Promise<string> {
-		const response = await fetch(
-			"https://api.groq.com/openai/v1/chat/completions",
-			{
-				method: "POST",
-				headers: {
-					Authorization: `Bearer ${API_KEYS.groq}`,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					model: "llama-3.3-70b-versatile",
-					messages: [
-						{
-							role: "system",
-							content:
-								"You are a helpful assistant that creates detailed task execution plans. Always follow the exact formatting requirements provided by the user.",
-						},
-						{
-							role: "user",
-							content: prompt,
-						},
-					],
-					max_tokens: 2000,
-					temperature: 0.7,
-				}),
-			},
-		);
+		let lastError: Error | null = null;
 
-		if (!response.ok) {
-			throw new Error(
-				`Groq API error: ${response.status} ${response.statusText}`,
-			);
+		for (const key of GROQ_KEYS) {
+			try {
+				const response = await fetch(
+					"https://api.groq.com/openai/v1/chat/completions",
+					{
+						method: "POST",
+						headers: {
+							Authorization: `Bearer ${key}`,
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							model: "qwen/qwen3.8-27b",
+							messages: [
+								{
+									role: "system",
+									content:
+										"You are a helpful assistant that creates detailed task execution plans. Always follow the exact formatting requirements provided by the user.",
+								},
+								{
+									role: "user",
+									content: prompt,
+								},
+							],
+							max_tokens: 1500,
+							temperature: 0.7,
+						}),
+					},
+				);
+
+				if (response.status === 429) {
+					console.warn(
+						`Groq 429 Rate Limit with key ending in ...${key.slice(-6)}. Trying fallback key...`
+					);
+					continue;
+				}
+
+				if (!response.ok) {
+					throw new Error(
+						`Groq API error: ${response.status} ${response.statusText}`,
+					);
+				}
+
+				const data = await response.json();
+
+				if (!data.choices || data.choices.length === 0) {
+					throw new Error("No response from Groq API");
+				}
+
+				return data.choices[0].message.content.trim();
+			} catch (error) {
+				lastError = error instanceof Error ? error : new Error(String(error));
+			}
 		}
 
-		const data = await response.json();
-
-		if (!data.choices || data.choices.length === 0) {
-			throw new Error("No response from Groq API");
-		}
-
-		return data.choices[0].message.content.trim();
+		throw lastError || new Error("No response from Groq API after trying all keys");
 	}
 
 	private async callGemini(prompt: string): Promise<string> {
@@ -226,7 +248,7 @@ ${prompt}`,
 		return data.choices[0].message.content.trim();
 	}
 
-	async generatePlan(provider: AIProvider, prompt: string): Promise<string> {
+	async generatePlan(provider: AIProviderConfig, prompt: string): Promise<string> {
 		try {
 			switch (provider.id) {
 				case "groq":
