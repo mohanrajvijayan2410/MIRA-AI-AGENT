@@ -60,23 +60,27 @@ function Iterative() {
       const botMessage: ChatMessage = {
         id: Date.now() + 1,
         type: 'bot',
-        content: `Processing "${currentTask}" using all three methods...`,
+        content: `Analyzing "${currentTask}" across Sequential, Step-by-Step Parallel, and Comparison methods...`,
         timestamp: new Date(),
       };
       setMessages(prev => [...prev, botMessage]);
 
-      // Call all three methods in parallel
-      const [sequentialResult, parallelResult, comparisonResult] = await Promise.all([
-        iterativeService.callSequentialMethod(currentTask),
-        iterativeService.callParallelMethod(currentTask),
-        iterativeService.callFeatureComparison(currentTask)
-      ]);
+      // 1. Sequential Method
+      const sequentialResult = await iterativeService.callSequentialMethod(currentTask);
+      setResults(prev => ({ ...prev, sequential: sequentialResult }));
 
-      setResults({
-        sequential: sequentialResult,
-        parallel: parallelResult,
-        comparison: comparisonResult
-      });
+      // Small pause between requests to prevent rate limit bursting
+      await new Promise((r) => setTimeout(r, 300));
+
+      // 2. Parallel Method
+      const parallelResult = await iterativeService.callParallelMethod(currentTask);
+      setResults(prev => ({ ...prev, parallel: parallelResult }));
+
+      await new Promise((r) => setTimeout(r, 300));
+
+      // 3. Feature Comparison Method
+      const comparisonResult = await iterativeService.callFeatureComparison(currentTask);
+      setResults(prev => ({ ...prev, comparison: comparisonResult }));
 
     } catch (error) {
       const errorMessage: ChatMessage = {
