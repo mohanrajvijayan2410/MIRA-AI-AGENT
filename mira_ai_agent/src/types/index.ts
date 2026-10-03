@@ -62,14 +62,16 @@ export interface DeepSeekResponse {
 }
 
 
+export type AIProvider = 'groq' | 'gemini' | 'mistral' | 'together' | 'deepseek';
+
 export interface AIProviderOption {
   id: AIProvider;
   name: string;
   description: string;
 }
 
-export interface AIProvider {
-  id: string;
+export interface AIProviderConfig {
+  id: AIProvider;
   name: string;
   apiKey: string;
   endpoint: string;
