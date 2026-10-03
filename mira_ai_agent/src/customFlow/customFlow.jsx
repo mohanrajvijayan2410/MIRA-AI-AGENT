@@ -17,11 +17,9 @@ function Chat() {
 	const messagesEndRef = useRef(null);
 
 	const groqModels = [
-		"llama-3.3-70b-versatile",
-		"llama-3.1-70b-versatile",
-		"llama-3.1-8b-instant",
-		"mixtral-8x7b-32768",
-		"gemma2-9b-it",
+		"qwen/qwen3.8-27b",
+		"openai/gpt-oss-120b",
+		"openai/gpt-oss-20b",
 	];
 
 	// Auto scroll to bottom when new messages are added
@@ -337,21 +335,21 @@ function Chat() {
 								<h4 className="text-lg font-semibold text-gray-700 mb-4">
 									Final Instructions
 								</h4>
-								<div className="grid grid-cols-2 gap-3">
+								<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 									{finalResults.instructions.map((instruction, index) => (
 										<div
 											key={index}
-											className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500 shadow-sm"
+											className="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-500 shadow-sm flex flex-col justify-between"
 										>
-											<div className="flex items-center justify-between mb-2">
+											<div className="flex items-center justify-between gap-2 mb-2">
 												<span className="font-medium text-gray-800">
 													Step {index + 1}
 												</span>
-												<span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+												<span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full whitespace-nowrap">
 													{instruction.type}
 												</span>
 											</div>
-											<p className="text-gray-600">{instruction.instruction}</p>
+											<p className="text-gray-700 text-sm leading-relaxed break-words">{instruction.instruction}</p>
 										</div>
 									))}
 								</div>
@@ -370,24 +368,24 @@ function Chat() {
 										</tr>
 									</thead>
 									<tbody>
-										{dependencies.map(
+										{Array.isArray(dependencies) && dependencies.map(
 											({
 												step,
 												dependsOn,
 												objectsInvolved,
 												classification,
 												consistency,
-											}) => (
-												<tr key={step} className="border-t hover:bg-gray-50">
+											}, idx) => (
+												<tr key={step || idx} className="border-t hover:bg-gray-50">
 													<td className="px-4 py-2">{step}</td>
 													<td className="px-4 py-2">
-														{dependsOn.length > 0 ? dependsOn.join(", ") : "—"}
+														{Array.isArray(dependsOn) ? (dependsOn.length > 0 ? dependsOn.join(", ") : "—") : (dependsOn || "—")}
 													</td>
 													<td className="px-4 py-2">
-														{objectsInvolved.join(", ")}
+														{Array.isArray(objectsInvolved) ? objectsInvolved.join(", ") : (objectsInvolved || "—")}
 													</td>
-													<td className="px-4 py-2">{classification}</td>
-													<td className="px-4 py-2">{consistency}</td>
+													<td className="px-4 py-2">{classification || "Simple Instruction"}</td>
+													<td className="px-4 py-2">{consistency || "—"}</td>
 												</tr>
 											),
 										)}
@@ -458,7 +456,7 @@ function Chat() {
 							onChange={(e) => setInputValue(e.target.value)}
 							onKeyPress={handleKeyPress}
 							placeholder="Enter your instruction (e.g., 'All Computers in CommonLab, has grounding issue.')"
-							className="w-full p-3 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue resize-none bg-white shadow-sm"
+							className="w-full p-3 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white shadow-sm"
 							rows="1"
 							disabled={isLoading || reviewMode}
 						/>
