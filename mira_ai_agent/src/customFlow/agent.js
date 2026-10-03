@@ -1,26 +1,42 @@
-import Groq from "groq-sdk/index.mjs";
-import run from "../config/gemini";
-const groq = new Groq({
-	apiKey: "gsk_uI9...ECIdNVtK46",
-	dangerouslyAllowBrowser: true,
-});
-
+import Groq from "groq-sdk";
 import { buildPrompt } from "./prompt_builder";
+
+const GROQ_KEYS = [
+	"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",
+	"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",
+];
+
+const groqClients = GROQ_KEYS.map(
+	(apiKey) => new Groq({ apiKey, dangerouslyAllowBrowser: true })
+);
+
+const callGroqWithFallback = async (params) => {
+	let lastError = null;
+	for (const client of groqClients) {
+		try {
+			const chatCompletion = await client.chat.completions.create(params);
+			return chatCompletion;
+		} catch (error) {
+			console.warn("Groq request failed with current key, trying fallback key...", error);
+			lastError = error;
+		}
+	}
+	throw lastError;
+};
 
 export const generateInstructions = async (taskDescription) => {
 	try {
 		const built_prompt = buildPrompt(taskDescription);
-		const chatCompletion = await groq.chat.completions.create({
+		const chatCompletion = await callGroqWithFallback({
 			messages: [
 				{
 					role: "user",
 					content: built_prompt,
 				},
 			],
-			model: "llama-3.3-70b-versatile",
+			model: "qwen/qwen3.8-27b",
 			temperature: 0.7,
 		});
-		const agent_response = run(built_prompt);
 		const response = chatCompletion.choices[0]?.message?.content || "";
 
 		// Clean the response to extract JSON
@@ -90,19 +106,23 @@ Just give me the json nothing other than that no text or anything
 `;
 
 	try {
-		const chatCompletion = await groq.chat.completions.create({
+		const chatCompletion = await callGroqWithFallback({
 			messages: [{ role: "user", content: dependencyPrompt }],
-			model: "llama-3.3-70b-versatile",
+			model: "qwen/qwen3.8-27b",
 			temperature: 0.7,
 		});
 
 		const raw = chatCompletion.choices[0]?.message?.content || "";
-		// extract the JSON array
-		const match = raw.match(/\[[\s\S]*\]/);
-		if (match) {
-			return JSON.parse(match[0]);
+		// extract the JSON
+		const jsonMatch = raw.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+		const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(raw);
+		if (Array.isArray(parsed)) {
+			return parsed;
 		}
-		return JSON.parse(raw);
+		if (parsed && Array.isArray(parsed.table)) {
+			return parsed.table;
+		}
+		return Object.values(parsed);
 	} catch (error) {
 		console.error("Error generating dependency table:", error);
 		// Fallback sample
@@ -110,14 +130,14 @@ Just give me the json nothing other than that no text or anything
 			{
 				step: 1,
 				dependsOn: [],
-				objectsInvolved: ["rice"],
+				objectsInvolved: ["Diagnostic Tool"],
 				classification: "Simple Instruction",
 				consistency: "—",
 			},
 			{
-				step: 4,
+				step: 2,
 				dependsOn: [1],
-				objectsInvolved: ["rice", "pot"],
+				objectsInvolved: ["Power Cable"],
 				classification: "Instruction in Sequence",
 				consistency: "Yes",
 			},
@@ -156,14 +176,14 @@ Return the result as JSON in this exact format:
 Only return valid JSON, no additional text.
 `;
 
-		const chatCompletion = await groq.chat.completions.create({
+		const chatCompletion = await callGroqWithFallback({
 			messages: [
 				{
 					role: "user",
 					content: prompt,
 				},
 			],
-			model: "llama-3.3-70b-versatile",
+			model: "qwen/qwen3.8-27b",
 			temperature: 0.3,
 		});
 
@@ -171,23 +191,18 @@ Only return valid JSON, no additional text.
 
 		// Clean the response to extract JSON
 		const jsonMatch = response.match(/\{[\s\S]*\}/);
-		if (jsonMatch) {
-			const response = JSON.parse(jsonMatch[0]);
-			response.dependencies = await generateDependencyTable(
-				response.instructions
-			);
-			return response;
-		}
-
-		const response_obj = JSON.parse(response);
-		response_obj.dependencies = await generateDependencyTable(
-			response_obj.instructions
+		const parsedResponse = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(response);
+		
+		const dependencyTable = await generateDependencyTable(
+			parsedResponse.instructions || instructions
 		);
-		return response_obj;
+		parsedResponse.dependencies = Array.isArray(dependencyTable) ? dependencyTable : [];
+		return parsedResponse;
 	} catch (error) {
 		console.error("Error finalizing instructions:", error);
 
 		// Return sample results as fallback
+		const fallbackDependencies = await generateDependencyTable(instructions);
 		return {
 			instructions: instructions,
 			metrics: {
@@ -196,8 +211,9 @@ Only return valid JSON, no additional text.
 				taskCompletionRate: "50%",
 				averageCompletionTime: "1 min",
 			},
-			actions: ["Take", "Heat", "Pour", "Add"],
-			objects: ["Water", "Coffee", "Cup", "Kettle"],
+			actions: ["Fetch", "Inspect", "Connect", "Finalize"],
+			objects: ["Diagnostic Tool", "Power Cable", "Sensor Module"],
+			dependencies: Array.isArray(fallbackDependencies) ? fallbackDependencies : [],
 		};
 	}
 };
