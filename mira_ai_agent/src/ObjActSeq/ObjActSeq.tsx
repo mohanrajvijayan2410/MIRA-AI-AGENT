@@ -6,6 +6,7 @@ import { ResultsTable, TaskDetails } from "../components/ResultsTable";
 import { CSVSearcher } from "./searchUtils";
 
 import { CSVRow, SearchResult } from "../types";
+import { generateDurationEstimate } from "./aiProviders";
 
 
 const allTasksCsvUrl = new URL("./dataset/Generic_Admin_Tasks_60_rows_.csv", import.meta.url)
@@ -69,10 +70,6 @@ function App() {
 		setDurationError(null);
 		setDuration("");
 		try {
-			// Import generateDurationEstimate from utils/aiProviders
-			const { generateDurationEstimate } = await import(
-				"./aiProviders"
-			);
 			const estimatedDuration = await generateDurationEstimate(
 				searchResult.item.Description,
 				searchResult.item.Actions,
@@ -178,7 +175,7 @@ function App() {
 						{csvData.length === 0 && (
 							<div className="lg:w-2/3 w-full text-center py-16">
 								<div className="w-full max-w-sm ml-9 text-left">
-									<div className="w-16 h-16 bg-gray-00 rounded-full flex items-center justify-center mx-auto">
+									<div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
 										{/* <Database className="w-8 h-8 text-gray-400" /> */}
 									</div>
 									<h3 className="text-2xl font-medium text-gray-900 -ml-5 -mt-2">
