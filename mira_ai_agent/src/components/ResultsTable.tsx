@@ -248,7 +248,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 		return "bg-gray-100 text-gray-700 border-gray-200";
 	};
 
-	const formatMIRAInstructions = (text: string) => {
+	const formatISAAInstructions = (text: string) => {
 		const sections = text.split("####").filter((section) => section.trim());
 		const formattedSections: JSX.Element[] = [];
 
@@ -648,12 +648,12 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 	};
 
 	const formatInstructions = (text: string) => {
-		// Check if the text contains the new MIRA format
+		// Check if the text contains the new ISAA format
 		if (
 			text.includes("#### Stepwise Instructions") ||
 			text.includes("#### Dependency Table")
 		) {
-			return formatMIRAInstructions(text);
+			return formatISAAInstructions(text);
 		}
 
 		// Fallback to old format parsing
@@ -781,7 +781,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 			<div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
 				<div className="bg-gradient-to-r from-orange-600 to-orange-700 px-6 py-4">
 					<h3 className="text-xl font-semibold text-white">
-						MIRA Protocol Instructions
+						ISAA Protocol Instructions
 					</h3>
 				</div>
 
@@ -824,7 +824,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 									<Loader2 className="w-6 h-6 text-orange-600 animate-spin flex-shrink-0" />
 									<div className="min-w-0">
 										<p className="text-orange-700 font-medium">
-											Generating MIRA instructions...
+											Generating ISAA instructions...
 										</p>
 										<p className="text-sm text-orange-600">
 											AI is analyzing task details, dependencies, and creating
@@ -868,7 +868,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({
 										{/* Step Type Legend - Fixed at bottom */}
 										<div className="bg-white border-t border-gray-200 p-4">
 											<h5 className="text-sm font-medium text-gray-700 mb-3">
-												MIRA Protocol Types:
+												ISAA Protocol Types:
 											</h5>
 											<div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
 												<div className="flex items-center gap-2">

@@ -26,17 +26,17 @@ const createPrompt = (
 	actions: string,
 	objects: string
 ): string => {
-	return `You are MIRA AI Agent for structured task sequencing and dependency analysis.
-Based on the following task information, generate clean and concise step-by-step instructions following the MIRA Protocol.
+	return `You are ISAA AI Agent for structured task sequencing and dependency analysis.
+Based on the following task information, generate clean and concise step-by-step instructions following the ISAA Protocol.
 
 Task Description: ${description}
 Available Actions: ${actions}
 Available Objects: ${objects}
 
-**MIRA Protocol Rules:**
+**ISAA Protocol Rules:**
 1. Each instruction must specify the action and object(s).
 2. For each instruction, state the required and resulting object states.
-3. Classify each instruction into one of the MIRA Instruction Types:
+3. Classify each instruction into one of the ISAA Instruction Types:
    - Simple Instruction: Single action on object(s). (e.g., Fetch Diagnostic Tool)
    - Instruction with Purpose: Action stating a goal or intention. (e.g., Initialize Power Supply if you want to test the circuit)
    - Instruction with Reason: Action stating why it is needed. (e.g., Add lubricant because friction is high)
@@ -102,7 +102,7 @@ const generateWithGroq = async (
 							{
 								role: "system",
 								content:
-									"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
+									"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the ISAA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
 							},
 							{
 								role: "user",
@@ -160,7 +160,7 @@ const generateWithGemini = async (
 					{
 						parts: [
 							{
-								text: `You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.
+								text: `You are a helpful assistant that creates clear, step-by-step instructions for tasks following the ISAA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.
 
 ${createPrompt(description, actions, objects)}`,
 							},
@@ -211,7 +211,7 @@ const generateWithMistral = async (
 				{
 					role: "system",
 					content:
-						"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
+						"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the ISAA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
 				},
 				{
 					role: "user",
@@ -255,7 +255,7 @@ const generateWithTogether = async (
 				{
 					role: "system",
 					content:
-						"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
+						"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the ISAA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
 				},
 				{
 					role: "user",
@@ -299,7 +299,7 @@ const generateWithDeepSeek = async (
 				{
 					role: "system",
 					content:
-						"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the MIRA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
+						"You are a helpful assistant that creates clear, step-by-step instructions for tasks following the ISAA protocol. Always follow the exact formatting requirements provided by the user. Generate detailed, structured instructions with proper classification and dependency analysis.",
 				},
 				{
 					role: "user",

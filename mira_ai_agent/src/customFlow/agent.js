@@ -32,7 +32,7 @@ export const generateInstructions = async (taskDescription) => {
 				{
 					role: "system",
 					content:
-						"You are MIRA AI Agent. You strictly output valid JSON arrays containing task instructions and MIRA instruction types following the MIRA Protocol. Never output explanatory text or markdown code fences.",
+						"You are ISAA AI Agent. You strictly output valid JSON arrays containing task instructions and ISAA instruction types following the ISAA Protocol. Never output explanatory text or markdown code fences.",
 				},
 				{
 					role: "user",
@@ -117,7 +117,7 @@ Just give me the json nothing other than that no text or anything
 				{
 					role: "system",
 					content:
-						"You are MIRA AI Agent. You strictly output valid JSON with no conversational text or markdown code fences.",
+						"You are ISAA AI Agent. You strictly output valid JSON with no conversational text or markdown code fences.",
 				},
 				{ role: "user", content: dependencyPrompt },
 			],
@@ -195,7 +195,7 @@ Only return valid JSON, no additional text.
 				{
 					role: "system",
 					content:
-						"You are MIRA AI Agent. You strictly output valid JSON with no conversational text or markdown code fences.",
+						"You are ISAA AI Agent. You strictly output valid JSON with no conversational text or markdown code fences.",
 				},
 				{
 					role: "user",

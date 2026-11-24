@@ -188,7 +188,7 @@ function App() {
 						)}
 					</div>
 
-					{/* MIRA Protocol Instructions - Full Width Below */}
+					{/* ISAA Protocol Instructions - Full Width Below */}
 					{csvData.length > 0 && hasSearched && (
 						<ResultsTable
 							result={searchResult}
