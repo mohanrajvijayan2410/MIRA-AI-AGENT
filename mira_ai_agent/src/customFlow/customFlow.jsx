@@ -17,8 +17,8 @@ function Chat() {
 	const messagesEndRef = useRef(null);
 
 	const groqModels = [
-		"qwen/qwen3.8-27b",
 		"openai/gpt-oss-120b",
+		"qwen/qwen3.8-27b",
 		"openai/gpt-oss-20b",
 	];
 

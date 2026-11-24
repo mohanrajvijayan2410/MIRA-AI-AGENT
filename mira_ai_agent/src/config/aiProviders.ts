@@ -4,7 +4,7 @@ export const AI_PROVIDERS: AIProviderConfig[] = [
   {
     id: 'groq',
     name: 'Groq',
-    apiKey: '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',
+    apiKey: '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',
     endpoint: 'https://api.groq.com/openai/v1/chat/completions'
   },
   {

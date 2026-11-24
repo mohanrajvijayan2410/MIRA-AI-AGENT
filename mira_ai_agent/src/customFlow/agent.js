@@ -2,8 +2,8 @@ import Groq from "groq-sdk";
 import { buildPrompt } from "./prompt_builder";
 
 const GROQ_KEYS = [
-	"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",
-	"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",
+	"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",
+	"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",
 ];
 
 const groqClients = GROQ_KEYS.map(
@@ -34,7 +34,7 @@ export const generateInstructions = async (taskDescription) => {
 					content: built_prompt,
 				},
 			],
-			model: "qwen/qwen3.8-27b",
+			model: "openai/gpt-oss-120b",
 			temperature: 0.7,
 		});
 		const response = chatCompletion.choices[0]?.message?.content || "";
@@ -108,7 +108,7 @@ Just give me the json nothing other than that no text or anything
 	try {
 		const chatCompletion = await callGroqWithFallback({
 			messages: [{ role: "user", content: dependencyPrompt }],
-			model: "qwen/qwen3.8-27b",
+			model: "openai/gpt-oss-120b",
 			temperature: 0.7,
 		});
 
@@ -183,7 +183,7 @@ Only return valid JSON, no additional text.
 					content: prompt,
 				},
 			],
-			model: "qwen/qwen3.8-27b",
+			model: "openai/gpt-oss-120b",
 			temperature: 0.3,
 		});
 

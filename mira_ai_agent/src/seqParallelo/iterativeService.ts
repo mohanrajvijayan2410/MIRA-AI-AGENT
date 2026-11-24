@@ -41,8 +41,8 @@ export interface ComparisonResponse {
 
 export class IterativeService {
 	private apiKeys = [
-		"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",
-		"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",
+		"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",
+		"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",
 	];
 
 	async callSequentialMethod(task: string): Promise<string> {
@@ -492,9 +492,9 @@ Task: "${task}"
 
 	private async makeApiCall(prompt: string, maxRetries = 2): Promise<string> {
 		const models = [
-			"qwen/qwen3.8-27b",
-			"openai/gpt-oss-20b",
 			"openai/gpt-oss-120b",
+			"openai/gpt-oss-20b",
+			"qwen/qwen3.8-27b",
 		];
 		let lastError: Error | null = null;
 
