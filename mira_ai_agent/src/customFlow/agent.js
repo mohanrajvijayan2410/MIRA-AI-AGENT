@@ -30,14 +30,20 @@ export const generateInstructions = async (taskDescription) => {
 		const chatCompletion = await callGroqWithFallback({
 			messages: [
 				{
+					role: "system",
+					content:
+						"You are MIRA AI Agent. You strictly output valid JSON arrays containing task instructions and MIRA instruction types following the MIRA Protocol. Never output explanatory text or markdown code fences.",
+				},
+				{
 					role: "user",
 					content: built_prompt,
 				},
 			],
 			model: "openai/gpt-oss-120b",
-			temperature: 0.7,
+			temperature: 0.5,
 		});
-		const response = chatCompletion.choices[0]?.message?.content || "";
+		const rawContent = chatCompletion.choices[0]?.message?.content || "";
+		const response = rawContent.replace(/```(?:json)?/gi, "").trim();
 
 		// Clean the response to extract JSON
 		const jsonMatch = response.match(/\[[\s\S]*\]/);
@@ -107,15 +113,23 @@ Just give me the json nothing other than that no text or anything
 
 	try {
 		const chatCompletion = await callGroqWithFallback({
-			messages: [{ role: "user", content: dependencyPrompt }],
+			messages: [
+				{
+					role: "system",
+					content:
+						"You are MIRA AI Agent. You strictly output valid JSON with no conversational text or markdown code fences.",
+				},
+				{ role: "user", content: dependencyPrompt },
+			],
 			model: "openai/gpt-oss-120b",
-			temperature: 0.7,
+			temperature: 0.3,
 		});
 
 		const raw = chatCompletion.choices[0]?.message?.content || "";
+		const clean = raw.replace(/```(?:json)?/gi, "").trim();
 		// extract the JSON
-		const jsonMatch = raw.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-		const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(raw);
+		const jsonMatch = clean.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+		const parsed = jsonMatch ? JSON.parse(jsonMatch[0]) : JSON.parse(clean);
 		if (Array.isArray(parsed)) {
 			return parsed;
 		}
@@ -179,6 +193,11 @@ Only return valid JSON, no additional text.
 		const chatCompletion = await callGroqWithFallback({
 			messages: [
 				{
+					role: "system",
+					content:
+						"You are MIRA AI Agent. You strictly output valid JSON with no conversational text or markdown code fences.",
+				},
+				{
 					role: "user",
 					content: prompt,
 				},
@@ -187,7 +206,8 @@ Only return valid JSON, no additional text.
 			temperature: 0.3,
 		});
 
-		const response = chatCompletion.choices[0]?.message?.content || "";
+		const raw = chatCompletion.choices[0]?.message?.content || "";
+		const response = raw.replace(/```(?:json)?/gi, "").trim();
 
 		// Clean the response to extract JSON
 		const jsonMatch = response.match(/\{[\s\S]*\}/);

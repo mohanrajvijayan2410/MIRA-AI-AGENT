@@ -5,7 +5,6 @@ import {
 	TogetherResponse,
 	DeepSeekResponse,
 	AIProvider,
-	AIProviderOption,
 } from "../types";
 
 // API Keys

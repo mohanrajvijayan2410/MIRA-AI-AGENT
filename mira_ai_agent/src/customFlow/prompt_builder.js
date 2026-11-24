@@ -1,11 +1,12 @@
 export const buildPrompt = (taskName) => {
 	return `
-You are an AI agent for the purpose of temporal reasoning. Your name is MIRA AI agent. You have to follow the protocols listed in MIRA PROTOCOL. I'll give you a list of available Objects (OBJ) and Valid Actions. Pick out correct objects from the list of Available Objects. Each action duration (DUR) is also given in valid action. The starting condition (START) and the end goal (FINAL GOAL) for the sequence is also given. With these you have to generate a sequence of instructions for the given task description. For each instruction also provide the type (TYPE) of instruction from MIRA PROTOCOL.
+You are an AI agent for the purpose of temporal reasoning. Your name is MIRA AI agent. You have to follow the protocols listed in MIRA PROTOCOL. Based on the task description, generate a logical sequence of step-by-step instructions. For each instruction, also provide the classification type from MIRA PROTOCOL.
 
 Task: ${taskName}
 
-**MIRA Protocol:** - Each instruction must specify action and object(s).
-- For each instruction, state the required and resulting object states.
+**MIRA Protocol:**
+- Each instruction must specify the action and object(s) relevant to the task.
+- For each instruction, state or imply the required and resulting object states.
 - Classify each instruction as: Simple Instruction, Instruction with Purpose, Instruction in Sequence, Exclusive Instruction, or Mandatory Instruction as per the following rules:
 
 **RULES**
@@ -39,17 +40,16 @@ INSTRUCTION TYPES:
       → TYPE: INSTRUCTION WITH SEQUENCE
 
  5. MANDATORY INSTRUCTION:
-    - Both actions must be performed, order does not matter.
+    - Both actions must be performed, order does not matter. Use "and".
     - Examples:
       • Wear safety gear and check power status
       • Update software and reboot controller
       → TYPE: MANDATORY INSTRUCTION
 
-Available Objects = {Toolbox, Diagnostic Tool, Power Cable, Battery Unit, Sensor Module, Spare Part, Fasteners, Control Panel, Server Rack, Network Switch, Lubricant, Cleaning Kit, Safety Gear, Multimeter, Soldering Iron, Cooling Fan, Mounting Bracket, Software Patch, Documentation, Mainframe, Robotic Arm, Hydraulic Fluid, Interface Cable}
+Objects and Actions:
+- Identify and select the appropriate objects (e.g., tools, equipment, materials, ingredients, or parts) and valid actions corresponding to "${taskName}".
 
-Valid Actions = {Fetch OBJ: DUR 2 minutes, Inspect OBJ: DUR 5 minutes, Install OBJ: DUR 10 minutes, Connect OBJ: DUR 3 minutes, Calibrate OBJ: DUR 8 minutes, Initialize OBJ: DUR 4 minutes, Replace OBJ: DUR 15 minutes, Repair OBJ: DUR 20 minutes, Update OBJ: DUR 10 minutes, Wait: DUR variable, Finalize OBJ: DUR 5 minutes}
-
-Please generate the step-by-step instructions for ${taskName} and return the result as a JSON array with the following format:
+Please generate 4 to 8 step-by-step instructions for "${taskName}" and return the result strictly as a valid JSON array in this exact format:
 [
   {
     "instruction": "Step description here",
@@ -58,6 +58,6 @@ Please generate the step-by-step instructions for ${taskName} and return the res
 ]
 **Output your answer in the format shown above.**
 
-Only return valid JSON, no additional text or formatting.
+CRITICAL: Only return valid JSON array, no additional text, introduction, or commentary.
 `;
 };
