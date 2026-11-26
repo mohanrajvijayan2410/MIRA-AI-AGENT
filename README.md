@@ -1,285 +1,471 @@
-# 🍳 MIRA: An Intelligent data Agent
+# FacultyAI Recruitment System
 
-Hosted Link: [https://mira-ai-agent-web.vercel.app/](https://mira-ai-agent-web.vercel.app/)
-old version: [https://mira-ai-agent.web.app/]
+AI-enabled faculty recruitment platform for automated resume evaluation,
+technical assessment, psychometric screening, and administrative
+decision support.
 
-**MIRA** is a powerful AI-driven data generation assistant that intelligently selects between different LLMs (Groq & Gemini) to produce structured datas. Designed with LangChain agents, Flask backend, and a Vite + Tailwind CSS frontend, MIRA is a full-stack showcase of modern agentic AI workflows.
+hostage link: https://mira-ai-agent-web.vercel.app
+Deployed URL: https://mira-ai-agent-web.vercel.app
 
----
+## Dataset
 
-## 🔧 Installation & Setup
+Resume Dataset:
+https://drive.google.com/drive/folders/1ce5eOycBV3gvPSAyXLM8hvEdEAUD2Qmn?usp=sharing
 
-### Pre-requisites:
+## Psychometric and Technical Questions
 
-1. Python 3.12 or higher
-2. NPM (Node Package Manager)
+Psychometric Questions:
+https://drive.google.com/file/d/1pwuxcAm-xKwMhaTQ1se1G55vtIWz19GJ/view?usp=sharing
 
-### 1. Clone the Repository
+Technical Questions:
+https://docs.google.com/spreadsheets/d/1G6a6SJgLDzLPdkw8Z3VzvaxDUWzOZ_9A/edit?usp=sharing
 
-```bash
-git clone https://github.com/mohanrajvijayan2410/MIRA_AGENT.git
-cd mira_agent
+------------------------------------------------------------------------
+
+# Project Overview
+
+FacultyAI Recruitment System is an AI-assisted recruitment platform
+developed to automate faculty candidate evaluation. The system combines
+resume analysis, skill matching, technical assessment, psychometric
+evaluation, and result generation.
+
+It provides a complete workflow from candidate application to final
+recommendation while reducing manual screening effort and improving
+evaluation consistency.
+
+The application is developed using React + Vite with PDF processing,
+automated scoring, browser storage, and analytics support.
+
+------------------------------------------------------------------------
+
+# Project Features
+
+## AI Resume Analysis
+
+-   Extracts text from uploaded PDF resumes.
+-   Identifies skills and calculates resume-fit score.
+-   Highlights missing skills.
+
+## Candidate Application Flow
+
+-   Collects candidate information.
+-   Supports PDF resume upload.
+-   Creates candidate profile.
+
+## Technical Assessment
+
+-   Loads department-specific questions from Excel.
+-   Supports timed assessment.
+-   Automatically calculates scores.
+
+## Psychometric Evaluation
+
+-   Loads questions from CSV.
+-   Evaluates behavioral and professional suitability.
+
+## Results Generation
+
+-   Combines resume, technical, and psychometric scores.
+-   Generates final score and recommendation.
+-   Creates downloadable PDF reports.
+
+## Admin Dashboard
+
+-   Provides candidate history and ranking.
+-   Displays analytics using charts.
+-   Supports candidate record management.
+
+------------------------------------------------------------------------
+
+# Objectives
+
+## Primary Objective
+
+Build an end-to-end digital recruitment workflow for faculty hiring.
+
+## Secondary Objectives
+
+-   Automate candidate evaluation.
+-   Provide consistent scoring.
+-   Generate transparent reports.
+
+------------------------------------------------------------------------
+
+# Technologies Used
+
+## Software Tools
+- Python – Core backend development
+- Flask – Web framework for routing & application logic
+- Google Gemini API – AI-based resume evaluation & scoring
+- PyPDF2 – Resume parsing (PDF)
+- SQLite – Database for candidate data & analytics
+- Pandas – Data handling & question upload via Excel
+- HTML/CSS – Frontend UI rendering
+
+## Hardware Tools
+- CPU (i5 / Ryzen 5 or above) – Handles backend processing & AI calls
+- RAM (8–16 GB) – Supports multiple candidate evaluations
+- Storage (SSD 256 GB+) – Stores resumes & database
+- Internet Connection – Required for Gemini API & web access
+  
+## Database
+
+-   Browser localStorage for candidate persistence.
+
+------------------------------------------------------------------------
+
+# System Architecture
+
+![Architecture](screenshots/Architecture.jpeg)
+
+## Architecture Flow
+
 ```
 
-### 2. Complete Setup 
+[ User Browser ] 
+      |
+      v
+[ React UI Layer ]
+      |
+      v
+[ Routing / Pages ]
+      |
+      v
+[ Recruitment Context ]
+      |
+      +--> [ Resume Analyzer ]
+      +--> [ Question Loader ]
+      +--> [ PDF Report Generator ]
+      |
+      v
+[ Browser Storage (localStorage) ]
+      |
+      v
+[ Admin Dashboard Visualization ]
 
-```bash
+```
+------------------------------------------------------------------------
+
+# Sample Video
+
+https://drive.google.com/file/d/1Kjc71bvCJIMp842jGN7ySobfOKDh7LKv/view?usp=sharing
+
+------------------------------------------------------------------------
+
+# Project Workflow
+
+1. User accesses the application through the browser.
+2. User selects “Apply” and completes profile + resume upload.
+3. The app validates the PDF, extracts text, and analyzes the resume.
+4. Resume scoring is processed against department-specific skills.
+5. The candidate proceeds to the technical assessment.
+6. The system loads questions from Excel and auto-grades answers.
+7. The candidate completes psychometric questions from CSV.
+8. Final score is calculated, recommendation is determined, and results are shown.
+
+------------------------------------------------------------------------
+
+# Module Description
+
+## Home Page
+- **Purpose:** Marketing and introduction page.
+- **Features:** Hero section, feature cards, workflow summary, CTA buttons.
+- **Workflow:** Directs candidates to career listings and application form.
+- **Input:** None.
+- **Output:** Navigation to candidate flows.
+
+## Apply Page
+- **Purpose:** Candidate onboarding and resume submission.
+- **Features:** Form fields, department selection, PDF upload.
+- **Workflow:** Collects candidate details, extracts resume text, sets current candidate state.
+- **Input:** Name, email, phone, department, resume PDF.
+- **Output:** `currentCandidate` object and resume analysis route transition.
+
+## Resume Analysis Page
+- **Purpose:** Display AI resume evaluation.
+- **Features:** Resume score, detected skills, missing skills, category breakdown.
+- **Workflow:** Reads `currentCandidate.resumeAnalysis`, shows results, advances candidate.
+- **Input:** Resume analysis data from `analyzeResume`.
+- **Output:** Candidate progress to technical assessment.
+
+## Technical Test Page
+- **Purpose:** Department-specific exam module.
+- **Features:** Subject selection, timed questions, answer tracking, auto submission.
+- **Workflow:** Loads Excel-based questions, runs timed sections, calculates technical score.
+- **Input:** Selected subjects, candidate answers.
+- **Output:** Technical score and updated candidate state.
+
+## Psychometric Test Page
+- **Purpose:** Behavioral and mindset measurement.
+- **Features:** CSV question loading, progress tracking, option selection.
+- **Workflow:** Presents psychometric questions, scores responses, computes final recommendation.
+- **Input:** Candidate answers to psychometric questions.
+- **Output:** Final candidate score and recommendation.
+
+## Results Page
+- **Purpose:** Final evaluation summary and report generation.
+- **Features:** Score cards, final score breakdown, PDF download.
+- **Workflow:** Reads completed candidate state and bundles results for presentation.
+- **Input:** Candidate scores from prior assessments.
+- **Output:** Downloadable PDF report.
+
+### Admin Page
+- **Purpose:** Recruitment analytics and candidate history.
+- **Features:** Candidate rankings, bar chart, pie chart, KPIs, clear history.
+- **Workflow:** Reads stored candidate history and presents aggregated metrics.
+- **Input:** `candidates` from localStorage.
+- **Output:** Data visualizations and administrative insights.
+
+------------------------------------------------------------------------
+
+# User Roles
+
+## Candidate
+
+-   Applies for faculty positions.
+-   Uploads resume.
+-   Completes assessments.
+-   Views results.
+
+## Admin
+
+-   Reviews candidates.
+-   Views analytics.
+-   Manages recruitment records.
+
+## Recruiter / Hiring Committee
+
+-   Uses reports for decision support.
+
+------------------------------------------------------------------------
+
+# Screenshots
+
+## Home Page
+
+![Home](screenshots/home.png)
+
+## Apply Page
+
+![Apply](screenshots/apply.png)
+
+## Resume Analysis Page
+
+![Resume Analysis](screenshots/resume-analysis.png)
+
+## Technical Test Page
+
+![Technical Test](screenshots/technical-test.png)
+
+## Psychometric Test Page
+
+![Psychometric Test](screenshots/psychometric-test.png)
+
+## Results Page
+
+![Results](screenshots/results.png)
+
+## Admin Dashboard
+
+![Admin Dashboard](screenshots/admin-dashboard.png)
+
+------------------------------------------------------------------------
+
+# API Documentation
+
+The workflow is implemented entirely in the browser using:
+
+- Static asset fetch for `public/data/technical_questions.xlsx`
+- Static asset fetch for `public/data/psychometric_questions.csv`
+- Browser `localStorage` for candidate persistence
+
+No `POST /api/*` or server-side endpoints are included in this frontend-only implementation.
+
+------------------------------------------------------------------------
+
+# Database Design
+
+## Storage
+
+Browser localStorage stores candidate records.
+
+## Candidate Schema
+
+-   id
+-   name
+-   email
+-   department
+-   resumeAnalysis
+-   technicalScore
+-   psychometricScore
+-   finalScore
+-   recommendation
+
+## Relationship
+
+    Candidate
+     |
+     +-- Resume Analysis
+     +-- Technical Assessment
+     +-- Psychometric Assessment
+     +-- Final Result
+
+------------------------------------------------------------------------
+
+## Folder Structure
+
+```
+.
+├── public
+│   ├── data
+│   │   ├── psychometric_questions.csv
+│   │   └── technical_questions.xlsx
+│   ├── _redirects
+│   └── robots.txt
+├── src
+│   ├── App.tsx
+│   ├── main.tsx
+│   ├── components
+│   │   ├── Navbar.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   └── ui
+│   ├── context
+│   │   ├── AuthContext.tsx
+│   │   └── RecruitmentContext.tsx
+│   ├── lib
+│   │   ├── pdfGenerator.ts
+│   │   ├── questionLoader.ts
+│   │   ├── resumeAnalyzer.ts
+│   │   └── utils.ts
+│   ├── pages
+│   │   ├── AdminLoginPage.tsx
+│   │   ├── AdminPage.tsx
+│   │   ├── ApplyPage.tsx
+│   │   ├── CareersPage.tsx
+│   │   ├── HomePage.tsx
+│   │   ├── PsychometricTestPage.tsx
+│   │   ├── ResumeAnalysisPage.tsx
+│   │   ├── ResultsPage.tsx
+│   │   ├── TechnicalTestPage.tsx
+│   │   └── NotFound.tsx
+│   ├── data
+│   │   └── questions.ts
+│   ├── hooks
+│   └── styles
+├── package.json
+├── tsconfig.json
+├── vite.config.ts
+├── tailwind.config.ts
+└── bun.lockb
+
+```
+------------------------------------------------------------------------
+
+# Installation Guide
+
+``` bash
+git clone <repository-url>
+cd facultyai-recruitment-system
 npm install
 ```
 
-```bash
-npm run install:all
-```
+Run:
 
-```bash
+``` bash
 npm run dev
 ```
 
-## Optional separate setup
-### 2. Backend Setup (Python)
+Build:
 
-```bash
-cd api_agent
+``` bash
+npm run build
 ```
 
-```bash
-pip install -r requirements.txt
-```
-
-```bash
-python main.py
-```
+------------------------------------------------------------------------
 
-### 3. Frontend Setup (React + Vite)
+# Usage Guide
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+1.  Open the application.
+2.  Submit candidate details.
+3.  Upload resume.
+4.  Complete assessments.
+5.  View final report.
+6.  Admin reviews dashboard.
 
-## Sample Input and Output
 
-### Input
+------------------------------------------------------------------------
 
-**Instruction:** PREPARE TEA
+# Results
 
-### Output
+The repository includes candidate evaluation reports and comparison visuals for the project.
 
-To make a cup of tea, follow these steps:
+## Candidate Shortlisting Evaluation
 
-1. **TYPE: SIMPLE INSTRUCTION**
+![Candidate Shortlisting Results](screenshots/result.png)
 
-   * Take teapot: The teapot is an essential object for making tea, so take it first.
-2. **TYPE: SEQUENTIAL INSTRUCTION**
 
-   * Take water then fill the teapot: Fill the teapot with water to prepare for boiling.
-3. **TYPE: SIMPLE INSTRUCTION**
+## Candidate Score Breakdown
 
-   * Heat teapot: Heat the filled teapot to boil the water.
-4. **TYPE: INSTRUCTION WITH REASON**
+![Candidate Case Analysis](screenshots/case.png)
 
-   * Add tea leaves to the teapot because tea leaves are necessary for making tea.
-5. **TYPE: SEQUENTIAL INSTRUCTION**
+## Comparative Metrics Analysis
 
-   * Wait for 3 minutes then strain the tea: Allow the tea leaves to steep in the water for a few minutes before straining.
-6. **TYPE: SIMPLE INSTRUCTION**
+![Comparative Metrics Analysis](screenshots/comparative.jpg)
 
-   * Take cup: Prepare the cup to pour the tea into.
-7. **TYPE: INSTRUCTION WITH PURPOSE**
+## Model Performance Comparison
 
-   * Pour the tea into the cup if your intention is to serve the tea.
-8. **TYPE: INSTRUCTION WITH REASON**
+![Model Performance Evaluation](screenshots/perf.png)
 
-   * Add condiments such as sugar or milk to taste because adding condiments can enhance the flavor of the tea.
 
-Available Objects = {Teapot, Water, Tea leaves, Cup, Condiments}
-Valid Actions = {Take OBJ: DUR 1 minute, Heat OBJ: DUR 3 minutes, Wait: DUR 3 minutes, Pour: DUR 1 minute, Add: DUR 1 minute}
 
----
+------------------------------------------------------------------------
 
-## 🚀 Features
+# Security Features
 
-* 🤖 **Agent-Based Reasoning** using LangChain
-* 🔁 **Multimodal Tool Invocation** – Supports both Groq & Gemini
-* 🌍 **Multilingual Data Generation**
-* 🧠 **Conversational Memory** with contextual prompts
-* ⚡ **Modern Frontend** with React, Vite, and Tailwind CSS
-* 🔐 Secure API Keys using `.env`
+-   Protected admin route.
+-   Authentication handling.
+-   Input validation.
+-   Local resume processing.
 
----
+------------------------------------------------------------------------
 
-## 🛠️ Project Structure
+# Future Enhancements
 
-```
-/MIRA-AI-AGENT
-│
-├── api_agent/
-│   ├── main.py                # Flask backend entry
-│   ├── requirements.txt
-│   └── mira/
-│       ├── agent.py           # LangChain agent logic
-│       ├── init.py            # EvaluationMetrics module
-│       ├── prompt_builder.py  # Custom prompt templates
-│       └── tools.py           # Groq & Gemini tool wrappers
-│
-├── config/
-│   └── settings.yaml          # Agent config (type etc.)
-│
-├── dataset/                   # (your dataset folder)
-└── frontend/
-    ├── .firebase/
-    ├── dist/
-    ├── node_modules/
-    ├── public/
-    └── src/
-        ├── components/
-        ├── config/
-        ├── mira/
-        ├── types/
-        ├── utils/
-        ├── App.jsx
-        ├── chat.jsx
-        ├── csv.tsx
-        ├── index.css
-        └── main.jsx
+1. Future Scope and Recommendations
+2. Integrate Explainable AI (XAI) to improve transparency in candidate evaluation.
+3. Extend the system with multimodal analysis (video and speech) for interview assessment.
+4. Deploy using cloud-based infrastructure for scalable and real-time recruitment.
+5. Expand to cross-domain recruitment beyond academic institutions.
+6. Enhance performance using advanced models and larger datasets.
+7. Implement bias detection and fairness mechanisms for ethical recruitment
 
-```
+------------------------------------------------------------------------
 
----
+# Challenges Faced
 
-## 🧠 How It Works
+-   Resume extraction accuracy.
+-   Managing assessment data.
+-   Maintaining workflow state.
+-   Building analytics dashboard.
 
-1. User submits a data name and language preference from the frontend.
-2. Flask backend invokes `run_agent()`, which builds a task prompt.
-3. LangChain agent chooses the right tool (Groq or Gemini) and returns a response.
-4. Evaluation metrics are computed.
-5. Frontend receives the response and displays both data and performance.
+------------------------------------------------------------------------
 
----
+# Learning Outcomes
 
-## 📦 API Endpoint
+-   React development.
+-   Resume processing.
+-   Context API state management.
+-   Data visualization.
+-   Frontend persistence.
 
-### `POST /generate-data`
+------------------------------------------------------------------------
 
-#### Payload
+# Deployment
 
-```json
+Supported platforms: 
+- Vercel
+- Netlify
+- GitHub Pages
+- Cloudflare Pages
 
-  "data_name": "Pasta Alfredo",
-  "language_option": "English",
-  "model": "groq"
-}
-```
-
-
----
-
-> All scores are auto-generated using the `EvaluationMetrics` module in `mira/init.py`.
-
----
-
-## 🌍 Deployment
-
-* **Frontend** is deployed on **Firebase Hosting**
-  🌐 [`https://mira-ai-agent.web.app`](https://mira-ai-agent.web.app)
-
-* **Backend** can be deployed to:
-
-  * PythonAnywhere
-
-> Make sure your environment variables are configured properly in the hosting dashboard.
-
----
-
-## 📝 Classification & Sequencing Prompt Integration
-
-MIRA’s second agent utilizes a classification and sequencing prompt to transform raw instructions into structured, dependency-aware steps. Below is the sample prompt and expected output format:
-
-```text
-Stepwise Instructions with Classification
-
-1. pick rice
-   Required state: rice is available
-   Resulting state: rice is picked
-   Type: Simple Instruction
-   Dependencies: none
-   Consistency: N/A
-
-2. pick beef
-   Required state: beef is available
-   Resulting state: beef is picked
-   Type: Simple Instruction
-   Dependencies: none
-   Consistency: N/A
-
-3. wash dish
-   Required state: dish is dirty
-   Resulting state: dish is clean
-   Type: Simple Instruction
-   Dependencies: none
-   Consistency: N/A
-
-4. cook rice in pot
-   Required state: rice is picked, pot is available
-   Resulting state: rice is cooked, pot is occupied
-   Type: Instruction in Sequence
-   Dependencies: Step 1
-   Consistency: Yes
-
-5. chop beef
-   Required state: beef is picked
-   Resulting state: beef is chopped
-   Type: Instruction with Reason
-   Reason: Prepares beef for frying
-   Dependencies: Step 2
-   Consistency: Yes
-
-6. fry beef in fryer
-   Required state: beef is chopped, fryer is available
-   Resulting state: beef is fried
-   Type: Instruction in Sequence
-   Dependencies: Step 5
-   Consistency: Yes
-
-7. add rice to dish
-   Required state: rice is cooked, dish is clean
-   Resulting state: dish contains rice
-   Type: Instruction in Sequence
-   Dependencies: Steps 3, 4
-   Consistency: Yes
-
-8. add beef to dish
-   Required state: beef is fried, dish contains rice
-   Resulting state: dish contains beef and rice (beef fried rice)
-   Type: Instruction in Sequence
-   Dependencies: Steps 6, 7
-   Consistency: Yes
-```
-
-### Flowchart
-
-<img src="https://github.com/user-attachments/assets/36a0d909-deb8-4a0a-997c-12bc126ecf54" 
-     alt="flowchart diagram" 
-     width="400px" />
-
-
-
-### 📊 Dependency Table Example
-
-| Step | Depends On | Objects Involved | Classification          | Consistency |
-| ---- | ---------- | ---------------- | ----------------------- | ----------- |
-| 1    | —          | rice             | Simple Instruction      | —           |
-| 2    | —          | beef             | Simple Instruction      | —           |
-| 3    | —          | dish             | Simple Instruction      | —           |
-| 4    | 1          | rice, pot        | Instruction in Sequence | Yes         |
-| 5    | 2          | beef             | Instruction with Reason | Yes         |
-| 6    | 5          | beef, fryer      | Instruction in Sequence | Yes         |
-| 7    | 3, 4       | rice, dish       | Instruction in Sequence | Yes         |
-| 8    | 6, 7       | beef, dish       | Instruction in Sequence | Yes         |
-
-```
-
-These structured outputs are fed back into the LangChain agent to ensure clarity, dependency management, and consistency across generated data.q
-
-```
+------------------------------------------------------------------------
