@@ -144,6 +144,7 @@ function Iterative() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState<string>('');
   const [results, setResults] = useState<IterativeResults>({
     sequential: null,
     parallel: null,
@@ -190,6 +191,7 @@ function Iterative() {
     const currentTask = inputValue;
     setInputValue('');
     setIsLoading(true);
+    setLoadingStatus('Generating Sequential Plan (Step 1/3)...');
     setResults({ sequential: null, parallel: null, comparison: null });
     setCustomStepTypes({ sequential: {}, parallel: {} });
     setEditingStep(null);
@@ -207,20 +209,30 @@ function Iterative() {
       const sequentialResult = await iterativeService.callSequentialMethod(currentTask);
       setResults((prev) => ({ ...prev, sequential: sequentialResult }));
 
-      await new Promise((r) => setTimeout(r, 300));
+      setLoadingStatus('Generating Step-by-Step Parallel Plan (Step 2/3)...');
+      await new Promise((r) => setTimeout(r, 700));
 
       // 2. Parallel Method
       const parallelResult = await iterativeService.callParallelMethod(currentTask);
       setResults((prev) => ({ ...prev, parallel: parallelResult }));
 
-      await new Promise((r) => setTimeout(r, 300));
+      setLoadingStatus('Comparing Methods & Trade-offs (Step 3/3)...');
+      await new Promise((r) => setTimeout(r, 700));
 
       // 3. Feature Comparison Method
       const comparisonResult = await iterativeService.callFeatureComparison(currentTask);
       setResults((prev) => ({ ...prev, comparison: comparisonResult }));
+
+      const completionMessage: ChatMessage = {
+        id: Date.now() + 2,
+        type: 'bot',
+        content: `Complete analysis for "${currentTask}" generated below. You can click any instruction type badge to customize it.`,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, completionMessage]);
     } catch (error) {
       const errorMessage: ChatMessage = {
-        id: Date.now() + 2,
+        id: Date.now() + 3,
         type: 'bot',
         content: `Sorry, I encountered an error processing your request: ${
           error instanceof Error ? error.message : 'Unknown error'
@@ -230,6 +242,7 @@ function Iterative() {
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      setLoadingStatus('');
     }
   };
 
@@ -385,8 +398,8 @@ function Iterative() {
                 <div className="flex items-center space-x-3">
                   <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
                   <div>
-                    <p className="text-gray-800 font-medium">Processing your task...</p>
-                    <p className="text-sm text-gray-600">Analyzing with all three methods</p>
+                    <p className="text-gray-800 font-medium">{loadingStatus || 'Processing your task...'}</p>
+                    <p className="text-sm text-gray-600">ISAA Multi-Method Planning Analysis</p>
                   </div>
                 </div>
               </div>

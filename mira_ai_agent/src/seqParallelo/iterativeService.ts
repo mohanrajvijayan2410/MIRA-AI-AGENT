@@ -44,80 +44,48 @@ export class IterativeService {
 		"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",
 		"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",
 	];
+	private currentKeyIndex = 0;
 
 	async callSequentialMethod(task: string): Promise<string> {
-		const prompt = `You are a task planning specialist. I need you to break down the following task into a structured, step-by-step plan using the Sequential Completion Method.
+		const prompt = `You are a task planning specialist for ISAA. Break down the following task into a structured plan using the Sequential Completion Method.
 
-**Sequential Completion Method**: Complete each object's full process before starting the next object. For each object (e.g., shirt1, towel2), perform the entire sequence of required actions from start to finish before moving to the next object. This method mimics real-world scenarios where objects are processed one-by-one to completion.
-
-Object Processing Order: object1 → object2 → object3 → object4 → object5
+**Sequential Completion Method**: Complete each object or sub-task fully before starting the next.
 Task: "${task}"
 
-**CRITICAL REQUIREMENT: Generate EXACTLY 5-6 steps only. Do not exceed 7 steps under any circumstances.**
-
-
-You should strictly follow this output format you should strictly follow this order
-The response should be exactly like this.. and should be strictly followed You should just give me this html content and nothing other than this.. 
+**CRITICAL REQUIREMENT: Generate EXACTLY 5 to 6 steps only. Do not exceed 7 steps.**
+Output ONLY clean HTML with the following structure, without any markdown backticks:
 
 <div class="p-4 text-gray-800 font-sans space-y-6">
-
-  <h2 class="text-2xl font-bold text-blue-700">🧠 Task: Wash and Hang 5 Shirts and 5 Towels</h2>
+  <h2 class="text-2xl font-bold text-blue-700">🧠 Task: ${task}</h2>
   <p><strong>Sequencing Method:</strong> Sequential Completion Method<br>
-  Each item (shirt1 to towel5) is fully processed before moving to the next.</p>
+  Complete each phase/item fully before proceeding to the next.</p>
 
-  <h3 class="text-xl font-semibold text-green-700">✅ Sample Instructions for shirt1</h3>
+  <h3 class="text-xl font-semibold text-green-700">✅ Sample Instructions</h3>
   <ol class="list-decimal list-inside space-y-1">
-    <li><strong>gather shirt1</strong><br>
-      <span class="ml-4 text-sm text-gray-600">Required state: shirt1 is uncollected → Resulting state: shirt1 is gathered<br>Type: Simple Instruction<br>Dependencies: None</span>
+    <li><strong>gather primary materials</strong><br>
+      <span class="ml-4 text-sm text-gray-600">Required state: ungathered → Resulting state: gathered<br>Type: Simple Instruction<br>Dependencies: None</span>
     </li>
-    <li><strong>gather detergent</strong><br>
-      <span class="ml-4 text-sm text-gray-600">Required state: detergent is available → Resulting state: detergent is gathered<br>Type: Simple Instruction<br>Dependencies: None</span>
+    <li><strong>prepare work area and components</strong><br>
+      <span class="ml-4 text-sm text-gray-600">Required state: gathered → Resulting state: ready<br>Type: Simple Instruction<br>Dependencies: Step 1</span>
     </li>
-    <li><strong>place shirt1 and detergent in washing</strong><br>
-      <span class="ml-4 text-sm text-gray-600">Required state: shirt1 and detergent → Resulting state: shirt1 and detergent<br>Type: Mandatory Instruction<br>Dependencies: Steps 1, 2</span>
+    <li><strong>position component for processing</strong><br>
+      <span class="ml-4 text-sm text-gray-600">Required state: ready → Resulting state: aligned<br>Type: Mandatory Instruction<br>Dependencies: Step 2</span>
     </li>
-    <li><strong>activate washing machine to wash shirt1</strong><br>
-      <span class="ml-4 text-sm text-gray-600">Required state: shirt1 and detergent → Resulting state: shirt1 is washed<br>Type: Instruction with Purpose<br>Dependencies: Step 3</span>
+    <li><strong>activate process with explicit purpose</strong><br>
+      <span class="ml-4 text-sm text-gray-600">Required state: aligned → Resulting state: processed<br>Type: Instruction with Purpose<br>Dependencies: Step 3</span>
     </li>
-    <li><strong>gather washed shirt1</strong><br>
-      <span class="ml-4 text-sm text-gray-600">Required state: shirt1 is washed → Resulting state: washed shirt1 is gathered<br>Type: Simple Instruction<br>Dependencies: Step 4</span>
-    </li>
-    <li><strong>hang shirt1</strong><br>
-      <span class="ml-4 text-sm text-gray-600">Required state: washed shirt1 is gathered → Resulting state: shirt1 is hanging<br>Type: Simple Instruction<br>Dependencies: Step 5</span>
+    <li><strong>verify and store finished object</strong><br>
+      <span class="ml-4 text-sm text-gray-600">Required state: processed → Resulting state: stored<br>Type: Simple Instruction<br>Dependencies: Step 4</span>
     </li>
   </ol>
 
-  <p class="italic text-gray-500">🔁 Repeat steps 1–6 for:<br>
-  shirt2 → shirt3 → shirt4 → shirt5 → towel1 → towel2 → towel3 → towel4 → towel5</p>
-
-  <h3 class="text-xl font-semibold text-indigo-700">✅ Final Sequenced Plan (with Purpose Made Explicit)</h3>
-
-  <h4 class="text-lg font-medium text-gray-800">🧥 Shirts</h4>
+  <h3 class="text-xl font-semibold text-indigo-700">✅ Final Sequenced Plan</h3>
   <ol class="list-decimal list-inside space-y-1">
-    <li>gather shirt1</li>
-    <li>gather detergent</li>
-    <li>place shirt1 and detergent in washing machine</li>
-    <li>activate washing machine to wash shirt1</li>
-    <li>gather washed shirt1</li>
-    <li>hang shirt1</li>
-    <li>gather shirt2</li>
-    <li>gather detergent</li>
-    <li>place shirt2 and detergent in washing machine</li>
-    <li>activate washing machine to wash shirt2</li>
-    <li>gather washed shirt2</li>
-    <li>hang shirt2</li>
-    <!-- Continue similarly through shirt5 -->
-  </ol>
-
-  <h4 class="text-lg font-medium text-gray-800 mt-4">🧻 Towels</h4>
-  <ol start="31" class="list-decimal list-inside space-y-1">
-    <li>gather towel1</li>
-    <li>gather detergent</li>
-    <li>place towel1 and detergent in washing machine</li>
-    <li>activate washing machine to wash towel1</li>
-    <li>gather washed towel1</li>
-    <li>hang towel1</li>
-    <!-- Continue to towel5 -->
+    <li>gather primary materials</li>
+    <li>prepare work area and components</li>
+    <li>position component for processing</li>
+    <li>activate process with explicit purpose</li>
+    <li>verify and store finished object</li>
   </ol>
 
   <h3 class="text-xl font-semibold text-purple-700 mt-6">🔗 Dependency Table (Excerpt)</h3>
@@ -136,215 +104,95 @@ The response should be exactly like this.. and should be strictly followed You s
         <tr>
           <td class="border border-gray-300 px-4 py-1">1</td>
           <td class="border border-gray-300 px-4 py-1">—</td>
-          <td class="border border-gray-300 px-4 py-1">shirt1</td>
+          <td class="border border-gray-300 px-4 py-1">materials</td>
           <td class="border border-gray-300 px-4 py-1">Simple Instruction</td>
           <td class="border border-gray-300 px-4 py-1">—</td>
         </tr>
         <tr class="bg-gray-50">
           <td class="border border-gray-300 px-4 py-1">2</td>
-          <td class="border border-gray-300 px-4 py-1">—</td>
-          <td class="border border-gray-300 px-4 py-1">detergent</td>
+          <td class="border border-gray-300 px-4 py-1">1</td>
+          <td class="border border-gray-300 px-4 py-1">work area</td>
           <td class="border border-gray-300 px-4 py-1">Simple Instruction</td>
-          <td class="border border-gray-300 px-4 py-1">—</td>
+          <td class="border border-gray-300 px-4 py-1">Yes</td>
         </tr>
         <tr>
           <td class="border border-gray-300 px-4 py-1">3</td>
-          <td class="border border-gray-300 px-4 py-1">1, 2</td>
-          <td class="border border-gray-300 px-4 py-1">shirt1, detergent</td>
+          <td class="border border-gray-300 px-4 py-1">2</td>
+          <td class="border border-gray-300 px-4 py-1">component</td>
           <td class="border border-gray-300 px-4 py-1">Mandatory Instruction</td>
           <td class="border border-gray-300 px-4 py-1">Yes</td>
         </tr>
         <tr class="bg-gray-50">
           <td class="border border-gray-300 px-4 py-1">4</td>
           <td class="border border-gray-300 px-4 py-1">3</td>
-          <td class="border border-gray-300 px-4 py-1">shirt1</td>
+          <td class="border border-gray-300 px-4 py-1">process unit</td>
           <td class="border border-gray-300 px-4 py-1">Instruction with Purpose</td>
           <td class="border border-gray-300 px-4 py-1">Yes</td>
         </tr>
         <tr>
           <td class="border border-gray-300 px-4 py-1">5</td>
           <td class="border border-gray-300 px-4 py-1">4</td>
-          <td class="border border-gray-300 px-4 py-1">shirt1</td>
-          <td class="border border-gray-300 px-4 py-1">Simple Instruction</td>
-          <td class="border border-gray-300 px-4 py-1">Yes</td>
-        </tr>
-        <tr class="bg-gray-50">
-          <td class="border border-gray-300 px-4 py-1">6</td>
-          <td class="border border-gray-300 px-4 py-1">5</td>
-          <td class="border border-gray-300 px-4 py-1">shirt1</td>
+          <td class="border border-gray-300 px-4 py-1">finished item</td>
           <td class="border border-gray-300 px-4 py-1">Simple Instruction</td>
           <td class="border border-gray-300 px-4 py-1">Yes</td>
         </tr>
       </tbody>
     </table>
   </div>
-</div>
-
-
-The table also should be generated like this and should be strictly followed.
-`;
+</div>`;
 
 		return this.makeApiCall(prompt);
 	}
 
 	async callParallelMethod(task: string): Promise<string> {
-		const prompt = `You are a task planning specialist. I need you to break down the following task into a structured, step-by-step plan using the Step-by-Step Parallel Method.
+		const prompt = `You are a task planning specialist for ISAA. Break down the following task using the Step-by-Step Parallel Method.
 
-**Step-by-Step Parallel Method**: Group all similar actions together (e.g., gather all items first, then process all items in parallel steps). For each action, perform it on all objects before moving to the next action.
-
-Action Processing Order: Action1 on all objects → Action2 on all objects → Action3 on all objects
+**Step-by-Step Parallel Method**: Group similar actions across all objects together by stage (e.g. gather all items in Stage A, position/prepare in Stage B, execute in Stage C).
 
 Task: "${task}"
- 
-The format should be strictly of this format, the response should be strictly following this format.
-<div class="p-6 bg-white text-gray-800 font-sans space-y-8">
 
-  <!-- Definition -->
+**CRITICAL REQUIREMENT: Generate 5 to 6 concise steps total across 2 to 3 stages. Keep it concise. Do not exceed 7 steps.**
+Output ONLY clean HTML with the following structure, without any markdown backticks:
+
+<div class="p-6 bg-white text-gray-800 font-sans space-y-8">
   <p class="text-sm italic text-gray-600">
-    Definition: Perform each action across all objects. Purpose‐Driven Instructions now clearly state the intent.
+    Definition: Perform each action across all objects. Purpose-Driven Instructions now clearly state the intent.
   </p>
 
-  <!-- Stages Header -->
   <h2 class="text-2xl font-bold text-blue-700">🔁 Stages of Execution (Grouped by Stage)</h2>
 
-  <!-- Stage A -->
   <div>
-    <h3 class="text-xl font-semibold text-green-700 mb-2">Stage A: Gather All Clothes</h3>
+    <h3 class="text-xl font-semibold text-green-700 mb-2">Stage A: Gather All Materials</h3>
     <ol class="list-decimal list-inside space-y-1">
-      <li>gather shirt1 <span class="text-sm text-gray-600">→ Simple Instruction</span></li>
-      <li>gather shirt2</li>
-      <li>gather shirt3</li>
-      <li>gather shirt4</li>
-      <li>gather shirt5</li>
-      <li>gather towel1</li>
-      <li>gather towel2</li>
-      <li>gather towel3</li>
-      <li>gather towel4</li>
-      <li>gather towel5</li>
+      <li>gather item 1 <span class="text-sm text-gray-600">→ Simple Instruction</span></li>
+      <li>gather item 2 <span class="text-sm text-gray-600">→ Simple Instruction</span></li>
     </ol>
   </div>
 
-  <!-- Stage B -->
   <div>
-    <h3 class="text-xl font-semibold text-yellow-700 mb-2">Stage B: Gather Detergent</h3>
-    <p class="ml-4">
-      11. gather detergent<br>
-      <span class="text-sm text-gray-600">Shared across all wash operations → Simple Instruction</span>
-    </p>
+    <h3 class="text-xl font-semibold text-yellow-700 mb-2">Stage B: Position & Prepare</h3>
+    <ol start="3" class="list-decimal list-inside space-y-1">
+      <li>position item 1 on workstation <span class="text-sm text-gray-600">→ Mandatory Instruction</span></li>
+      <li>position item 2 on workstation <span class="text-sm text-gray-600">→ Mandatory Instruction</span></li>
+    </ol>
   </div>
 
-  <!-- Stage C -->
   <div>
-    <h3 class="text-xl font-semibold text-red-700 mb-2">Stage C: Place Items and Wash Them Individually</h3>
-    <p class="ml-4 mb-4 text-gray-700">
-      Each item is placed with detergent into the washing machine, activated for its own wash cycle, then gathered and hung.
-    </p>
-
-    <!-- Shirts Table -->
-    <h4 class="text-lg font-medium text-gray-800 mb-1">🧥 Shirts</h4>
-    <div class="overflow-x-auto">
-      <table class="min-w-full table-auto border border-gray-300 text-sm">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="border px-4 py-2 text-left">Item</th>
-            <th class="border px-4 py-2 text-left">Steps</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="border px-4 py-1">shirt1</td>
-            <td class="border px-4 py-1">
-              12. place shirt1 and detergent in washing machine<br>
-              <span class="font-semibold">13. activate washing machine to wash shirt1</span><br>
-              14. gather washed shirt1<br>
-              15. hang shirt1
-            </td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="border px-4 py-1">shirt2</td>
-            <td class="border px-4 py-1">16–19</td>
-          </tr>
-          <tr>
-            <td class="border px-4 py-1">shirt3</td>
-            <td class="border px-4 py-1">20–23</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="border px-4 py-1">shirt4</td>
-            <td class="border px-4 py-1">24–27</td>
-          </tr>
-          <tr>
-            <td class="border px-4 py-1">shirt5</td>
-            <td class="border px-4 py-1">28–31</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Towels Table -->
-    <h4 class="text-lg font-medium text-gray-800 mt-6 mb-1">🧻 Towels</h4>
-    <div class="overflow-x-auto">
-      <table class="min-w-full table-auto border border-gray-300 text-sm">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="border px-4 py-2 text-left">Item</th>
-            <th class="border px-4 py-2 text-left">Steps</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="border px-4 py-1">towel1</td>
-            <td class="border px-4 py-1">
-              32. place towel1 and detergent in washing machine<br>
-              <span class="font-semibold">33. activate washing machine to wash towel1</span><br>
-              34. gather washed towel1<br>
-              35. hang towel1
-            </td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="border px-4 py-1">towel2</td>
-            <td class="border px-4 py-1">36–39</td>
-          </tr>
-          <tr>
-            <td class="border px-4 py-1">towel3</td>
-            <td class="border px-4 py-1">40–43</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="border px-4 py-1">towel4</td>
-            <td class="border px-4 py-1">44–47</td>
-          </tr>
-          <tr>
-            <td class="border px-4 py-1">towel5</td>
-            <td class="border px-4 py-1">48–51</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <h3 class="text-xl font-semibold text-red-700 mb-2">Stage C: Parallel Processing</h3>
+    <ol start="5" class="list-decimal list-inside space-y-1">
+      <li>execute processing across items <span class="text-sm text-gray-600">→ Instruction with Purpose</span></li>
+    </ol>
   </div>
 
-  <!-- Final Sequenced Plan -->
   <div>
     <h3 class="text-xl font-semibold text-indigo-700 mb-2">✅ Final Sequenced Plan</h3>
     <p class="ml-4 space-y-1 text-gray-700">
-      <span>[Gathering Phase] 1–10: gather all clothes</span><br>
-      <span>11: gather detergent</span><br>
-      <span>[Washing &amp; Hanging Phase]</span><br>
-      <span>12. place shirt1 and detergent in washing machine</span><br>
-      <span>13. activate washing machine to wash shirt1</span><br>
-      <span>14. gather washed shirt1</span><br>
-      <span>15. hang shirt1</span><br>
-      <span>16–19: shirt2</span><br>
-      <span>20–23: shirt3</span><br>
-      <span>24–27: shirt4</span><br>
-      <span>28–31: shirt5</span><br>
-      <span>32–35: towel1</span><br>
-      <span>36–39: towel2</span><br>
-      <span>40–43: towel3</span><br>
-      <span>44–47: towel4</span><br>
-      <span>48–51: towel5</span>
+      <span>[Stage A] 1–2: Gather all materials</span><br>
+      <span>[Stage B] 3–4: Position and prepare in parallel</span><br>
+      <span>[Stage C] 5: Execute concurrent operation</span>
     </p>
   </div>
 
-  <!-- Dependency Table Excerpt -->
   <div>
     <h3 class="text-xl font-semibold text-purple-700 mb-2">🔗 Dependency Table (Excerpt)</h3>
     <div class="overflow-x-auto">
@@ -362,116 +210,108 @@ The format should be strictly of this format, the response should be strictly fo
           <tr>
             <td class="border px-4 py-1">1</td>
             <td class="border px-4 py-1">—</td>
-            <td class="border px-4 py-1">shirt1</td>
+            <td class="border px-4 py-1">item 1</td>
             <td class="border px-4 py-1">Simple Instruction</td>
             <td class="border px-4 py-1">—</td>
           </tr>
           <tr class="bg-gray-50">
-            <td class="border px-4 py-1">11</td>
+            <td class="border px-4 py-1">2</td>
             <td class="border px-4 py-1">—</td>
-            <td class="border px-4 py-1">detergent</td>
+            <td class="border px-4 py-1">item 2</td>
             <td class="border px-4 py-1">Simple Instruction</td>
             <td class="border px-4 py-1">—</td>
           </tr>
           <tr>
-            <td class="border px-4 py-1">12</td>
-            <td class="border px-4 py-1">1, 11</td>
-            <td class="border px-4 py-1">shirt1, detergent</td>
+            <td class="border px-4 py-1">3</td>
+            <td class="border px-4 py-1">1</td>
+            <td class="border px-4 py-1">item 1</td>
             <td class="border px-4 py-1">Mandatory Instruction</td>
             <td class="border px-4 py-1">Yes</td>
           </tr>
           <tr class="bg-gray-50">
-            <td class="border px-4 py-1">13</td>
-            <td class="border px-4 py-1">12</td>
-            <td class="border px-4 py-1">shirt1</td>
-            <td class="border px-4 py-1">Instruction with Purpose</td>
+            <td class="border px-4 py-1">4</td>
+            <td class="border px-4 py-1">2</td>
+            <td class="border px-4 py-1">item 2</td>
+            <td class="border px-4 py-1">Mandatory Instruction</td>
             <td class="border px-4 py-1">Yes</td>
           </tr>
           <tr>
-            <td class="border px-4 py-1">14</td>
-            <td class="border px-4 py-1">13</td>
-            <td class="border px-4 py-1">shirt1</td>
-            <td class="border px-4 py-1">Simple Instruction</td>
-            <td class="border px-4 py-1">Yes</td>
-          </tr>
-          <tr class="bg-gray-50">
-            <td class="border px-4 py-1">15</td>
-            <td class="border px-4 py-1">14</td>
-            <td class="border px-4 py-1">shirt1</td>
-            <td class="border px-4 py-1">Simple Instruction</td>
+            <td class="border px-4 py-1">5</td>
+            <td class="border px-4 py-1">3, 4</td>
+            <td class="border px-4 py-1">item 1, item 2</td>
+            <td class="border px-4 py-1">Instruction with Purpose</td>
             <td class="border px-4 py-1">Yes</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-
-</div>
-`;
+</div>`;
 
 		return this.makeApiCall(prompt);
 	}
-	async callFeatureComparison(task: string): Promise<string> {
-		const prompt = `You should generate the entire table with respect to the task name given below in the following table format
 
-Task: "${task}"
+	async callFeatureComparison(task: string): Promise<string> {
+		const prompt = `You are a task planning specialist for ISAA. Generate a comparison table between Sequential Completion Method and Step-by-Step Parallel Method for the task: "${task}".
+
+Output ONLY the HTML container with no markdown code fences:
 
 <div class="p-6 bg-white text-gray-800 font-sans">
-  <h2 class="text-2xl font-bold text-blue-700 mb-4">Method Comparison</h2>
+  <h2 class="text-2xl font-bold text-blue-700 mb-4">Method Comparison: ${task}</h2>
   <div class="overflow-x-auto">
     <table class="min-w-full table-auto border border-gray-300 text-sm">
       <thead class="bg-gray-100">
         <tr>
-          <th class="border px-4 py-2 text-left">Feature</th>
-          <th class="border px-4 py-2 text-left">Sequential Completion Method</th>
-          <th class="border px-4 py-2 text-left">Step-by-Step Parallel Method</th>
+          <th class="border px-4 py-2 text-left font-semibold">Feature</th>
+          <th class="border px-4 py-2 text-left font-semibold">Sequential Completion Method</th>
+          <th class="border px-4 py-2 text-left font-semibold">Step-by-Step Parallel Method</th>
         </tr>
       </thead>
       <tbody>
         <tr class="bg-white">
-          <td class="border px-4 py-2">Focus</td>
-          <td class="border px-4 py-2">Per object</td>
-          <td class="border px-4 py-2">Per action</td>
+          <td class="border px-4 py-2 font-medium">Focus</td>
+          <td class="border px-4 py-2">Per object (item-by-item)</td>
+          <td class="border px-4 py-2">Per action (stage-by-stage)</td>
         </tr>
         <tr class="bg-gray-50">
-          <td class="border px-4 py-2">Total steps</td>
-          <td class="border px-4 py-2">60</td>
-          <td class="border px-4 py-2">51</td>
+          <td class="border px-4 py-2 font-medium">Execution Flow</td>
+          <td class="border px-4 py-2">Linear serial completion</td>
+          <td class="border px-4 py-2">Concurrent stage operations</td>
         </tr>
         <tr class="bg-white">
-          <td class="border px-4 py-2">Washing machine use</td>
-          <td class="border px-4 py-2">Serial (one item at a time)</td>
-          <td class="border px-4 py-2">Serial (one item at a time)</td>
+          <td class="border px-4 py-2 font-medium">Resource Utilization</td>
+          <td class="border px-4 py-2">Repeated setup per item</td>
+          <td class="border px-4 py-2">Batch setup shared across items</td>
         </tr>
         <tr class="bg-gray-50">
-          <td class="border px-4 py-2">Detergent handling</td>
-          <td class="border px-4 py-2">Repeated gather (per object)</td>
-          <td class="border px-4 py-2">Single gather shared for all</td>
+          <td class="border px-4 py-2 font-medium">Parallel Optimization</td>
+          <td class="border px-4 py-2">None (single-threaded)</td>
+          <td class="border px-4 py-2">High (multi-component synchronization)</td>
         </tr>
         <tr class="bg-white">
-          <td class="border px-4 py-2">Parallel optimization</td>
-          <td class="border px-4 py-2">No (isolated, one-by-one)</td>
-          <td class="border px-4 py-2">Yes (batch gather then process)</td>
-        </tr>
-        <tr class="bg-gray-50">
-          <td class="border px-4 py-2">Activation phrasing</td>
-          <td class="border px-4 py-2">Explicit purpose per object</td>
-          <td class="border px-4 py-2">Explicit purpose per object</td>
-        </tr>
-        <tr class="bg-white">
-          <td class="border px-4 py-2">Execution pattern</td>
-          <td class="border px-4 py-2">Object1 → full sequence → Object2</td>
-          <td class="border px-4 py-2">All objects: Action1 → Action2 → …</td>
+          <td class="border px-4 py-2 font-medium">Failure Impact</td>
+          <td class="border px-4 py-2">Isolated to current item</td>
+          <td class="border px-4 py-2">May pause whole stage</td>
         </tr>
       </tbody>
     </table>
   </div>
-
-</div>
-
-`;
+</div>`;
 
 		return this.makeApiCall(prompt);
+	}
+
+	private stripMarkdownFences(text: string): string {
+		let cleaned = text.trim();
+		if (cleaned.startsWith("```html")) {
+			cleaned = cleaned.slice(7);
+		} else if (cleaned.startsWith("```")) {
+			cleaned = cleaned.slice(3);
+		}
+		if (cleaned.endsWith("```")) {
+			cleaned = cleaned.slice(0, -3);
+		}
+		return cleaned.trim();
 	}
 
 	private async makeApiCall(prompt: string, maxRetries = 2): Promise<string> {
@@ -482,8 +322,20 @@ Task: "${task}"
 		];
 		let lastError: Error | null = null;
 
-		for (const key of this.apiKeys) {
-			for (const model of models) {
+		// Rotate keys round-robin across calls so one key doesn't get flooded
+		const startKeyIndex = this.currentKeyIndex;
+		this.currentKeyIndex = (this.currentKeyIndex + 1) % this.apiKeys.length;
+
+		// Build key list starting from the rotated index
+		const orderedKeys = [
+			this.apiKeys[startKeyIndex],
+			...this.apiKeys.filter((_, i) => i !== startKeyIndex),
+		];
+
+		for (const model of models) {
+			for (let keyIdx = 0; keyIdx < orderedKeys.length; keyIdx++) {
+				const key = orderedKeys[keyIdx];
+
 				for (let attempt = 0; attempt < maxRetries; attempt++) {
 					try {
 						const response = await fetch(
@@ -500,25 +352,26 @@ Task: "${task}"
 										{
 											role: "system",
 											content:
-												"You are a helpful assistant that creates detailed task execution plans. Always follow the exact formatting requirements provided by the user.",
+												"You are a helpful assistant for ISAA that creates task execution plans. Output strictly the requested HTML without code block delimiters.",
 										},
 										{
 											role: "user",
 											content: prompt,
 										},
 									],
-									max_tokens: 1500,
-									temperature: 0.7,
+									max_tokens: 2800,
+									temperature: 0.6,
 								}),
 							}
 						);
 
 						if (response.status === 429) {
-							// Rate limit hit on this key, warn and attempt fallback
 							console.warn(
-								`Groq 429 Rate Limit on model ${model} with key ending in ...${key.slice(-6)}. Trying next key/model...`
+								`Groq 429 Rate Limit on model ${model} with key ending in ...${key.slice(
+									-6
+								)}. Rotating to next key...`
 							);
-							// Break out of retry loop for this key to immediately switch to next key/model
+							// Break attempt loop to switch to next key immediately
 							break;
 						}
 
@@ -531,16 +384,22 @@ Task: "${task}"
 						const data = await response.json();
 
 						if (!data.choices || data.choices.length === 0) {
-							throw new Error("No response from API");
+							throw new Error("No response choices from API");
 						}
 
-						return data.choices[0].message.content.trim();
+						const content = data.choices[0].message?.content || "";
+						if (!content.trim()) {
+							throw new Error("Empty response received from model");
+						}
+
+						return this.stripMarkdownFences(content);
 					} catch (error) {
 						lastError =
 							error instanceof Error ? error : new Error(String(error));
+
 						if (attempt < maxRetries - 1) {
 							await new Promise((resolve) =>
-								setTimeout(resolve, 800 * (attempt + 1))
+								setTimeout(resolve, 600 * (attempt + 1))
 							);
 						}
 					}
@@ -548,11 +407,11 @@ Task: "${task}"
 			}
 		}
 
-		console.error("Error making API call after trying all keys:", lastError);
+		console.error("Error making API call after trying all models and keys:", lastError);
 		throw new Error(
 			lastError instanceof Error
 				? `Failed to generate plan: ${lastError.message}`
-				: "Failed to generate plan"
+				: "Failed to generate plan due to rate limits or API availability. Please retry in a few moments."
 		);
 	}
 }
