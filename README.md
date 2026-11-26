@@ -1,79 +1,77 @@
-# FacultyAI Recruitment System
+# ISAA: Instruction Sequencing AI Agent
 
-AI-enabled faculty recruitment platform for automated resume evaluation,
-technical assessment, psychometric screening, and administrative
-decision support.
+AI-enabled autonomous agent platform for intelligent task decomposition, instruction classification, sequential-parallel workflow optimization, and dependency analysis.
 
 hostage link: https://mira-ai-agent-web.vercel.app
-Deployed URL: https://mira-ai-agent-web.vercel.app
 
 ## Dataset
 
-Resume Dataset:
-https://drive.google.com/drive/folders/1ce5eOycBV3gvPSAyXLM8hvEdEAUD2Qmn?usp=sharing
+TimeArena Task Benchmark Dataset:
+[]()
 
-## Psychometric and Technical Questions
+Generic Administrative & Operational Tasks Dataset (100,000+ rows):
+[]()
 
-Psychometric Questions:
-https://drive.google.com/file/d/1pwuxcAm-xKwMhaTQ1se1G55vtIWz19GJ/view?usp=sharing
+Generic Operational Tasks Dataset (60-row quick benchmark):
+[]()
 
-Technical Questions:
-https://docs.google.com/spreadsheets/d/1G6a6SJgLDzLPdkw8Z3VzvaxDUWzOZ_9A/edit?usp=sharing
+## Task Classification & ISAA Protocol Reference
+
+ISAA Instruction Classification & Dependency Guidelines:
+[]()
+
+Action-Object Sequencing & State Transition Rules:
+[]()
 
 ------------------------------------------------------------------------
 
 # Project Overview
 
-FacultyAI Recruitment System is an AI-assisted recruitment platform
-developed to automate faculty candidate evaluation. The system combines
-resume analysis, skill matching, technical assessment, psychometric
-evaluation, and result generation.
+ISAA (Instruction Sequencing AI Agent) is an AI-assisted task planning and workflow optimization platform developed to automate the decomposition of complex natural language tasks into structured, dependency-aware execution sequences. 
 
-It provides a complete workflow from candidate application to final
-recommendation while reducing manual screening effort and improving
-evaluation consistency.
+The system formalizes task decomposition through the standardized **ISAA Protocol**, categorizing every atomic instruction into formal semantic types (Simple, Purpose-Driven, Reason-Based, Sequential, Exclusive, and Mandatory) while computing required and resulting object states.
 
-The application is developed using React + Vite with PDF processing,
-automated scoring, browser storage, and analytics support.
+It provides a comprehensive multi-method workflow spanning three core paradigms:
+1. **CustomFlow**: Interactive human-in-the-loop task instruction generation, inline step editing, and dependency verification.
+2. **ObjActSeq**: High-scale dataset search, action-object extraction, and automated execution duration estimation.
+3. **SeqParallelo**: Comparative dual-paradigm execution planning contrasting **Sequential Completion Method** (object-by-object) against **Step-by-Step Parallel Method** (action-by-action stages) with feature trade-off matrices.
+
+The application is built with a modern React + TypeScript + Vite architecture, featuring high-speed fuzzy search, multi-key Groq and Gemini AI provider failover, and responsive Tailwind CSS UI rendering.
 
 ------------------------------------------------------------------------
 
 # Project Features
 
-## AI Resume Analysis
+## Interactive Task Instruction Generation (CustomFlow)
 
--   Extracts text from uploaded PDF resumes.
--   Identifies skills and calculates resume-fit score.
--   Highlights missing skills.
+-   Decomposes natural language tasks into ordered atomic instructions using LLM reasoning.
+-   Assigns ISAA Protocol classifications to each generated step.
+-   Provides step-by-step review mode with inline editing for instruction text and instruction types.
+-   Calculates object state transitions (Required State → Resulting State) and validates sequence consistency.
+-   Generates comprehensive dependency tables and extracted action/object catalogs.
 
-## Candidate Application Flow
+## Action-Object Dataset Search & Duration Estimation (ObjActSeq)
 
--   Collects candidate information.
--   Supports PDF resume upload.
--   Creates candidate profile.
+-   Loads large-scale task execution datasets including `TimeArenaTask.csv` and `Generic_Admin_Tasks_100000_rows_.csv`.
+-   Supports user CSV dataset upload with automated parsing via PapaParse.
+-   Implements instant, typo-tolerant fuzzy searching powered by Fuse.js.
+-   Extracts available actions and participating objects for any selected task.
+-   Generates AI-powered execution duration estimates with confidence intervals and breakdown justifications.
 
-## Technical Assessment
+## Comparative Sequential vs. Parallel Planning (SeqParallelo)
 
--   Loads department-specific questions from Excel.
--   Supports timed assessment.
--   Automatically calculates scores.
+-   Decomposes tasks using the **Sequential Completion Method** (processes each item start-to-finish).
+-   Decomposes tasks using the **Step-by-Step Parallel Method** (groups similar operations into synchronized execution stages).
+-   Renders interactive, click-to-edit instruction type badges enabling real-time human modification.
+-   Synchronizes custom badge edits across instruction lists and dependency tables.
+-   Generates an automated **Feature Comparison Matrix** evaluating execution focus, parallel optimization, resource sharing, and failure impact.
 
-## Psychometric Evaluation
+## Intelligent Multi-Key AI Provider Engine
 
--   Loads questions from CSV.
--   Evaluates behavioral and professional suitability.
-
-## Results Generation
-
--   Combines resume, technical, and psychometric scores.
--   Generates final score and recommendation.
--   Creates downloadable PDF reports.
-
-## Admin Dashboard
-
--   Provides candidate history and ranking.
--   Displays analytics using charts.
--   Supports candidate record management.
+-   Integrates Groq ultra-low-latency models (`openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b`) and Google Gemini.
+-   Features round-robin API key balancing to stay strictly within rate limits.
+-   Implements automatic failover on HTTP 429 rate-limiting and prompt token optimization.
+-   Configurable multi-provider architecture ready for Mistral, Together AI, and DeepSeek.
 
 ------------------------------------------------------------------------
 
@@ -81,36 +79,41 @@ automated scoring, browser storage, and analytics support.
 
 ## Primary Objective
 
-Build an end-to-end digital recruitment workflow for faculty hiring.
+Build an end-to-end intelligent agentic workflow for automated instruction sequencing, semantic instruction classification, and comparative parallel execution planning.
 
 ## Secondary Objectives
 
--   Automate candidate evaluation.
--   Provide consistent scoring.
--   Generate transparent reports.
+-   Enforce logical consistency in state transitions across multi-step execution graphs.
+-   Provide human-in-the-loop customization allowing users to modify instruction types and steps interactively.
+-   Benchmark and contrast serial versus staged parallel execution patterns for complex operational workflows.
+-   Provide fast fuzzy retrieval across 100,000+ benchmark task records with automated time estimation.
 
 ------------------------------------------------------------------------
 
 # Technologies Used
 
 ## Software Tools
-- Python – Core backend development
-- Flask – Web framework for routing & application logic
-- Google Gemini API – AI-based resume evaluation & scoring
-- PyPDF2 – Resume parsing (PDF)
-- SQLite – Database for candidate data & analytics
-- Pandas – Data handling & question upload via Excel
-- HTML/CSS – Frontend UI rendering
+- React 18 – Modern frontend framework with component-based reactive architecture
+- TypeScript & JSX – Type-safe application development and robust schema modeling
+- Vite 5 – Next-generation high-speed build tool and frontend development server
+- Tailwind CSS – Utility-first responsive design system
+- Lucide React – Iconography suite for agent and workflow interfaces
+- Groq Cloud API – High-performance LLM inference engine (`openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b`)
+- Google Gemini API – Multimodal and conversational instruction planning
+- PapaParse – High-performance in-browser CSV parsing and streaming
+- Fuse.js – Client-side lightweight fuzzy-search library for large task corpora
+- React Router DOM v6 – Client-side multi-view routing and navigation
 
 ## Hardware Tools
-- CPU (i5 / Ryzen 5 or above) – Handles backend processing & AI calls
-- RAM (8–16 GB) – Supports multiple candidate evaluations
-- Storage (SSD 256 GB+) – Stores resumes & database
-- Internet Connection – Required for Gemini API & web access
-  
+- CPU (Intel Core i5 / AMD Ryzen 5 or above) – Handles local development server, client bundling, and fuzzy search
+- RAM (8–16 GB) – Recommended for indexing 100k+ row datasets in memory
+- Storage (SSD 256 GB+) – Fast asset loading and node_modules caching
+- Internet Connection – Required for Groq and Gemini API inference
+
 ## Database
 
--   Browser localStorage for candidate persistence.
+-   In-memory client state management with React hooks (`useState`, `useCallback`, `useMemo`, `useRef`).
+-   Browser `localStorage` for user preferences, custom overrides, and active session persistence.
 
 ------------------------------------------------------------------------
 
@@ -121,165 +124,160 @@ Build an end-to-end digital recruitment workflow for faculty hiring.
 ## Architecture Flow
 
 ```
-
-[ User Browser ] 
-      |
-      v
-[ React UI Layer ]
-      |
-      v
-[ Routing / Pages ]
-      |
-      v
-[ Recruitment Context ]
-      |
-      +--> [ Resume Analyzer ]
-      +--> [ Question Loader ]
-      +--> [ PDF Report Generator ]
-      |
-      v
-[ Browser Storage (localStorage) ]
-      |
-      v
-[ Admin Dashboard Visualization ]
-
+[ User Input / Natural Language Task ] 
+                    |
+                    v
+          [ React UI Layer ]
+                    |
+      +-------------+-------------+
+      |                           |
+      v                           v
+[ Navigation / Router ]  [ Dataset Selector / Uploader ]
+      |                           |
+      +---> [ CustomFlow View ]   +---> [ PapaParse CSV Streamer ]
+      |     (Interactive Review)  |
+      |                           +---> [ Fuse.js Fuzzy Index ]
+      +---> [ ObjActSeq View ]    |
+      |     (Action-Object Map)   v
+      |                  [ Results Table & Duration Card ]
+      +---> [ SeqParallelo View ]
+            (Comparative Matrix)
+                    |
+                    v
+    [ AI Provider & Orchestration Layer ]
+                    |
+      +-------------+-------------+
+      |                           |
+      v                           v
+[ Key Manager / Rotator ]  [ Prompt Engineering Engine ]
+      |                    (ISAA Protocol & Few-Shot Templates)
+      v                           |
+[ Groq Cloud / Gemini API ] <-----+
+(gpt-oss-120b / qwen3.8)
+                    |
+                    v
+[ Instruction Parser & Badge Transformer ]
+                    |
+                    v
+[ Rendered Plans + Dependency Tables + Comparison ]
 ```
+
 ------------------------------------------------------------------------
 
 # Sample Video
 
-https://drive.google.com/file/d/1Kjc71bvCJIMp842jGN7ySobfOKDh7LKv/view?usp=sharing
+[]()
 
 ------------------------------------------------------------------------
 
 # Project Workflow
 
-1. User accesses the application through the browser.
-2. User selects “Apply” and completes profile + resume upload.
-3. The app validates the PDF, extracts text, and analyzes the resume.
-4. Resume scoring is processed against department-specific skills.
-5. The candidate proceeds to the technical assessment.
-6. The system loads questions from Excel and auto-grades answers.
-7. The candidate completes psychometric questions from CSV.
-8. Final score is calculated, recommendation is determined, and results are shown.
+1. User opens the application via browser at `https://mira-ai-agent-web.vercel.app`.
+2. Navigation bar allows seamless selection between **CustomFlow**, **ObjActSeq**, and **SeqParallelo** modules.
+3. In **CustomFlow**:
+   - User inputs a high-level task (e.g., "how to prepare a cake" or "assemble a computer motherboard").
+   - Agent generates classified steps according to the ISAA Protocol.
+   - User reviews steps in real time, optionally editing text or clicking instruction type badges.
+   - Agent validates required and resulting states, producing the final plan and dependency table.
+4. In **ObjActSeq**:
+   - System loads the default `TimeArenaTask.csv` dataset or user-uploaded CSV.
+   - User types a search query in the search bar; Fuse.js performs instant fuzzy matching.
+   - System displays the matched task description, available actions, and required objects.
+   - Agent automatically predicts the estimated execution duration with reasoning.
+5. In **SeqParallelo**:
+   - User enters a task involving multiple items or repetitive actions.
+   - System paces requests through round-robin API key rotation to prevent rate limiting.
+   - Agent sequentially generates the **Sequential Completion Method**, the **Step-by-Step Parallel Method**, and the **Method Comparison Matrix**.
+   - User can click any instruction type badge on either plan or dependency table to customize classifications interactively.
 
 ------------------------------------------------------------------------
 
 # Module Description
 
-## Home Page
-- **Purpose:** Marketing and introduction page.
-- **Features:** Hero section, feature cards, workflow summary, CTA buttons.
-- **Workflow:** Directs candidates to career listings and application form.
-- **Input:** None.
-- **Output:** Navigation to candidate flows.
+## CustomFlow Module (`/`)
+- **Purpose:** Interactive agentic instruction generation, review, and state-consistency validation.
+- **Features:** Conversational input, dynamic instruction count, step review carousel, inline text editing, custom type dropdown, state transition modeling, action and object summary badges.
+- **Workflow:** User submits task prompt → Groq/Gemini agent extracts steps and types → interactive review interface activates → user approves or edits steps → dependency table and consistency metrics render.
+- **Input:** Task prompt string, model choice, human approval/edit events.
+- **Output:** Sequenced instructions, dependency matrix, consistency checks, object and action lists.
 
-## Apply Page
-- **Purpose:** Candidate onboarding and resume submission.
-- **Features:** Form fields, department selection, PDF upload.
-- **Workflow:** Collects candidate details, extracts resume text, sets current candidate state.
-- **Input:** Name, email, phone, department, resume PDF.
-- **Output:** `currentCandidate` object and resume analysis route transition.
+## ObjActSeq Module (`/upload`)
+- **Purpose:** Large-scale task dataset exploration, object-action decomposition, and duration estimation.
+- **Features:** TimeArena and Generic Admin task dataset integrations, custom CSV file drag-and-drop uploader, instant client-side fuzzy search, action and object tag clouds, AI duration estimation card.
+- **Workflow:** Dataset loaded into memory → user enters query → searcher matches top task → actions and objects parsed → AI model called to compute task duration → rendered in unified results view.
+- **Input:** CSV file, search query string.
+- **Output:** Top-ranked task record, action list, object list, estimated duration with reasoning breakdown.
 
-## Resume Analysis Page
-- **Purpose:** Display AI resume evaluation.
-- **Features:** Resume score, detected skills, missing skills, category breakdown.
-- **Workflow:** Reads `currentCandidate.resumeAnalysis`, shows results, advances candidate.
-- **Input:** Resume analysis data from `analyzeResume`.
-- **Output:** Candidate progress to technical assessment.
-
-## Technical Test Page
-- **Purpose:** Department-specific exam module.
-- **Features:** Subject selection, timed questions, answer tracking, auto submission.
-- **Workflow:** Loads Excel-based questions, runs timed sections, calculates technical score.
-- **Input:** Selected subjects, candidate answers.
-- **Output:** Technical score and updated candidate state.
-
-## Psychometric Test Page
-- **Purpose:** Behavioral and mindset measurement.
-- **Features:** CSV question loading, progress tracking, option selection.
-- **Workflow:** Presents psychometric questions, scores responses, computes final recommendation.
-- **Input:** Candidate answers to psychometric questions.
-- **Output:** Final candidate score and recommendation.
-
-## Results Page
-- **Purpose:** Final evaluation summary and report generation.
-- **Features:** Score cards, final score breakdown, PDF download.
-- **Workflow:** Reads completed candidate state and bundles results for presentation.
-- **Input:** Candidate scores from prior assessments.
-- **Output:** Downloadable PDF report.
-
-### Admin Page
-- **Purpose:** Recruitment analytics and candidate history.
-- **Features:** Candidate rankings, bar chart, pie chart, KPIs, clear history.
-- **Workflow:** Reads stored candidate history and presents aggregated metrics.
-- **Input:** `candidates` from localStorage.
-- **Output:** Data visualizations and administrative insights.
+## SeqParallelo Module (`/iterative`)
+- **Purpose:** Comparative task sequencing across sequential and staged parallel execution paradigms.
+- **Features:** Dual-paradigm generation, stage groupings (Gather, Prepare, Process, Finalize), automated feature comparison table, click-to-edit badge system with modal dialog, round-robin key balancing.
+- **Workflow:** Task submitted → Sequential method generated → Parallel method generated by stage → Comparative trade-off matrix produced → interactive badges allow custom classification overrides.
+- **Input:** Multi-object or multi-step task description.
+- **Output:** Side-by-side sequential vs. parallel HTML plans, stage-grouped execution trees, dependency tables, comparative matrix.
 
 ------------------------------------------------------------------------
 
 # User Roles
 
-## Candidate
+## System Operator / Planner
 
--   Applies for faculty positions.
--   Uploads resume.
--   Completes assessments.
--   Views results.
+-   Inputs operational tasks and processes.
+-   Evaluates sequential versus parallel execution trade-offs.
+-   Customizes instruction classifications and dependency links.
 
-## Admin
+## Quality & Process Auditor
 
--   Reviews candidates.
--   Views analytics.
--   Manages recruitment records.
+-   Reviews state transition consistency (Required State → Resulting State).
+-   Inspects dependency tables to ensure safety and prerequisite compliance.
+-   Downloads benchmark datasets and analyzes step durations.
 
-## Recruiter / Hiring Committee
+## System Administrator / Developer
 
--   Uses reports for decision support.
+-   Configures AI model providers (Groq, Gemini, Mistral).
+-   Manages API key rotations and rate-limit thresholds.
+-   Extends dataset schemas and benchmarks.
 
 ------------------------------------------------------------------------
 
 # Screenshots
 
-## Home Page
+## CustomFlow View
 
-![Home](screenshots/home.png)
+![CustomFlow View](screenshots/customflow.png)
 
-## Apply Page
+## ObjActSeq Dataset & Search View
 
-![Apply](screenshots/apply.png)
+![ObjActSeq View](screenshots/objactseq.png)
 
-## Resume Analysis Page
+## SeqParallelo Sequential & Parallel Planning
 
-![Resume Analysis](screenshots/resume-analysis.png)
+![SeqParallelo View](screenshots/seqparallelo.png)
 
-## Technical Test Page
+## Interactive Instruction Type Edit Modal
 
-![Technical Test](screenshots/technical-test.png)
+![Type Edit Modal](screenshots/type-edit.png)
 
-## Psychometric Test Page
+## Method Comparison Matrix
 
-![Psychometric Test](screenshots/psychometric-test.png)
-
-## Results Page
-
-![Results](screenshots/results.png)
-
-## Admin Dashboard
-
-![Admin Dashboard](screenshots/admin-dashboard.png)
+![Method Comparison](screenshots/comparison.png)
 
 ------------------------------------------------------------------------
 
 # API Documentation
 
-The workflow is implemented entirely in the browser using:
+The platform interfaces directly with high-speed LLM inference providers using OpenAI-compatible and Google Generative AI REST endpoints:
 
-- Static asset fetch for `public/data/technical_questions.xlsx`
-- Static asset fetch for `public/data/psychometric_questions.csv`
-- Browser `localStorage` for candidate persistence
-
-No `POST /api/*` or server-side endpoints are included in this frontend-only implementation.
+- **Groq API**:
+  - Endpoint: `https://api.groq.com/openai/v1/chat/completions`
+  - Models: `openai/gpt-oss-120b`, `openai/gpt-oss-20b`, `qwen/qwen3.8-27b`
+  - Authentication: Bearer token with multi-key round-robin rotation
+  - Rate-limit handling: Automatic failover on HTTP 429
+- **Google Gemini API**:
+  - Endpoint: `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`
+  - Authentication: API key parameter
+- **Client-Side Data Feeds**:
+  - Dataset fetch: `src/ObjActSeq/dataset/TimeArenaTask.csv`
+  - Large dataset fetch: `src/ObjActSeq/dataset/Generic_Admin_Tasks_100000_rows_.csv`
 
 ------------------------------------------------------------------------
 
@@ -287,28 +285,37 @@ No `POST /api/*` or server-side endpoints are included in this frontend-only imp
 
 ## Storage
 
-Browser localStorage stores candidate records.
+In-browser state management with persistence for user customizations and dataset cache.
 
-## Candidate Schema
+## Task and Instruction Schema
 
--   id
--   name
--   email
--   department
--   resumeAnalysis
--   technicalScore
--   psychometricScore
--   finalScore
--   recommendation
+-   taskId
+-   taskName
+-   description
+-   actions: string[]
+-   objects: string[]
+-   steps: Array<{
+        number: number;
+        instruction: string;
+        instructionType: 'Simple Instruction' | 'Instruction with Purpose' | 'Instruction with Reason' | 'Instruction in Sequence' | 'Exclusive Instruction' | 'Mandatory Instruction';
+        requiredState: string;
+        resultingState: string;
+        dependencies: string;
+        consistency: string;
+    }>
+-   durationEstimate: string
 
 ## Relationship
 
-    Candidate
+    Task
      |
-     +-- Resume Analysis
-     +-- Technical Assessment
-     +-- Psychometric Assessment
-     +-- Final Result
+     +-- Action List
+     +-- Object List
+     +-- Instruction Sequence
+     |     +-- State Transitions (Required -> Resulting)
+     |     +-- Dependency Links
+     |     +-- Classification Type
+     +-- Method Comparison (Sequential vs. Parallel)
 
 ------------------------------------------------------------------------
 
@@ -316,156 +323,170 @@ Browser localStorage stores candidate records.
 
 ```
 .
-├── public
-│   ├── data
-│   │   ├── psychometric_questions.csv
-│   │   └── technical_questions.xlsx
-│   ├── _redirects
-│   └── robots.txt
-├── src
-│   ├── App.tsx
-│   ├── main.tsx
-│   ├── components
-│   │   ├── Navbar.tsx
-│   │   ├── ProtectedRoute.tsx
-│   │   └── ui
-│   ├── context
-│   │   ├── AuthContext.tsx
-│   │   └── RecruitmentContext.tsx
-│   ├── lib
-│   │   ├── pdfGenerator.ts
-│   │   ├── questionLoader.ts
-│   │   ├── resumeAnalyzer.ts
-│   │   └── utils.ts
-│   ├── pages
-│   │   ├── AdminLoginPage.tsx
-│   │   ├── AdminPage.tsx
-│   │   ├── ApplyPage.tsx
-│   │   ├── CareersPage.tsx
-│   │   ├── HomePage.tsx
-│   │   ├── PsychometricTestPage.tsx
-│   │   ├── ResumeAnalysisPage.tsx
-│   │   ├── ResultsPage.tsx
-│   │   ├── TechnicalTestPage.tsx
-│   │   └── NotFound.tsx
-│   ├── data
-│   │   └── questions.ts
-│   ├── hooks
-│   └── styles
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── tailwind.config.ts
-└── bun.lockb
-
+├── dist/                                # Production build bundle
+├── mira_ai_agent/                       # Main application workspace
+│   ├── public/
+│   │   ├── krama.png
+│   │   └── mira.jpg
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── AIProviderSelector.tsx   # Provider configuration UI
+│   │   │   ├── ApiSelector.tsx          # API endpoint dropdown
+│   │   │   ├── ComparisonTable.tsx      # Feature comparison matrix
+│   │   │   ├── CSVUploader.tsx          # Dataset file uploader
+│   │   │   ├── DependencyTable.tsx      # Dependency & state table
+│   │   │   ├── GenerateButton.tsx       # Action triggers
+│   │   │   ├── MethodSelector.tsx       # Execution mode selector
+│   │   │   ├── OutputDisplay.tsx        # Instruction card renderer
+│   │   │   ├── PlanRenderer.tsx         # Structured plan view
+│   │   │   ├── ResultsTable.tsx         # Search & duration results
+│   │   │   ├── SearchBox.tsx            # Fuzzy search input
+│   │   │   └── TaskInput.tsx            # Natural language prompt box
+│   │   ├── config/
+│   │   │   ├── aiProviders.ts           # Model configurations & keys
+│   │   │   └── gemini.js                # Gemini SDK client
+│   │   ├── customFlow/
+│   │   │   ├── agent.js                 # Instruction generation agent
+│   │   │   ├── customFlow.jsx           # CustomFlow main page
+│   │   │   └── prompt_builder.js        # ISAA system prompt builder
+│   │   ├── ObjActSeq/
+│   │   │   ├── dataset/
+│   │   │   │   ├── All_task_2.csv
+│   │   │   │   ├── Generic_Admin_Tasks_100000_rows_.csv
+│   │   │   │   ├── Generic_Admin_Tasks_60_rows_.csv
+│   │   │   │   └── TimeArenaTask.csv    # Default benchmark dataset
+│   │   │   ├── aiProviders.ts           # ObjActSeq duration agent
+│   │   │   ├── csvParser.ts             # PapaParse wrapper
+│   │   │   ├── ObjActSeq.tsx            # Dataset search page
+│   │   │   └── searchUtils.ts           # Fuse.js fuzzy search engine
+│   │   ├── seqParallelo/
+│   │   │   ├── apiService.ts            # Fallback service
+│   │   │   ├── iterativeService.ts      # Multi-key Groq planner
+│   │   │   ├── promptService.ts         # Sequencing prompt helpers
+│   │   │   └── seqParallelo.tsx         # SeqParallelo page & badge editor
+│   │   ├── types/
+│   │   │   └── index.ts                 # TypeScript type definitions
+│   │   ├── App.jsx                      # Main router & top navbar
+│   │   ├── index.css                    # Tailwind CSS imports
+│   │   └── main.jsx                     # Application bootstrap
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package.json
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── package.json                         # Root package scripts
+├── requirements.txt
+└── README.md
 ```
+
 ------------------------------------------------------------------------
 
 # Installation Guide
 
 ``` bash
-git clone <repository-url>
-cd facultyai-recruitment-system
+git clone https://github.com/mohanrajvijayan2410/MIRA_AGENT.git
+cd mira-agent-mohan-sir/mira_ai_agent
 npm install
 ```
 
-Run:
+Run development server:
 
 ``` bash
 npm run dev
 ```
 
-Build:
+Build for production:
 
 ``` bash
 npm run build
+```
+
+Preview production build:
+
+``` bash
+npm run preview
 ```
 
 ------------------------------------------------------------------------
 
 # Usage Guide
 
-1.  Open the application.
-2.  Submit candidate details.
-3.  Upload resume.
-4.  Complete assessments.
-5.  View final report.
-6.  Admin reviews dashboard.
-
+1.  Open the application in your browser (local `http://localhost:5173` or deployed `https://mira-ai-agent-web.vercel.app`).
+2.  **CustomFlow**: Enter a task description in the prompt box, click generate, review instructions step-by-step, edit any instruction text or type, and view the final dependency table.
+3.  **ObjActSeq**: Search through benchmark tasks using keywords, view extracted actions and objects, and observe the AI-estimated execution duration.
+4.  **SeqParallelo**: Submit any multi-object task, review the side-by-side **Sequential** and **Parallel** plans, click on any type badge to customize its ISAA classification, and analyze the method comparison matrix.
 
 ------------------------------------------------------------------------
 
 # Results
 
-The repository includes candidate evaluation reports and comparison visuals for the project.
+The platform provides quantitative and qualitative evaluation across sequencing accuracy, dependency tracking, and execution efficiency.
 
-## Candidate Shortlisting Evaluation
+## Method Comparison Breakdown
 
-![Candidate Shortlisting Results](screenshots/result.png)
+| Feature | Sequential Completion Method | Step-by-Step Parallel Method |
+| :--- | :--- | :--- |
+| **Execution Focus** | Per object (item-by-item completion) | Per action (stage-by-stage synchronization) |
+| **Flow Pattern** | Linear serial execution | Concurrent stage operations |
+| **Resource Efficiency** | Setup repeated per object | Setup shared across all batch items |
+| **Parallel Optimization** | None (single-threaded) | High (multi-component synchronization) |
+| **Failure Impact** | Isolated to current active object | May pause entire stage for resolution |
 
+## Instruction Classification Distribution
 
-## Candidate Score Breakdown
-
-![Candidate Case Analysis](screenshots/case.png)
-
-## Comparative Metrics Analysis
-
-![Comparative Metrics Analysis](screenshots/comparative.jpg)
-
-## Model Performance Comparison
-
-![Model Performance Evaluation](screenshots/perf.png)
-
-
+- **Simple Instruction**: Single direct actions with no branching.
+- **Mandatory Instruction**: Concurrently required actions ("and").
+- **Instruction with Purpose**: Goal-oriented operations specifying intentionality.
+- **Instruction with Reason**: Justified actions stating prerequisites.
+- **Instruction in Sequence**: Ordered dependencies linked with temporal markers ("then").
 
 ------------------------------------------------------------------------
 
 # Security Features
 
--   Protected admin route.
--   Authentication handling.
--   Input validation.
--   Local resume processing.
+-   Client-side sanitized HTML rendering with XSS protection.
+-   Safe API key rotation with environment variable isolation.
+-   Failsafe HTTP 429 rate-limiting detection and backoff prevention.
+-   Client-side dataset processing keeping user CSVs in local memory.
 
 ------------------------------------------------------------------------
 
 # Future Enhancements
 
-1. Future Scope and Recommendations
-2. Integrate Explainable AI (XAI) to improve transparency in candidate evaluation.
-3. Extend the system with multimodal analysis (video and speech) for interview assessment.
-4. Deploy using cloud-based infrastructure for scalable and real-time recruitment.
-5. Expand to cross-domain recruitment beyond academic institutions.
-6. Enhance performance using advanced models and larger datasets.
-7. Implement bias detection and fairness mechanisms for ethical recruitment
+1. Integration of Explainable AI (XAI) to visualize the decision trees behind state transitions.
+2. Real-world robotic execution interface using ROS2 action bridges.
+3. Gantt chart visualization for critical-path timing in parallel workflows.
+4. Multimodal video instruction ingestion to automatically generate ISAA steps from task demonstration videos.
+5. Automated cycle detection and deadlock resolution in complex dependency graphs.
 
 ------------------------------------------------------------------------
 
 # Challenges Faced
 
--   Resume extraction accuracy.
--   Managing assessment data.
--   Maintaining workflow state.
--   Building analytics dashboard.
+-   Handling Groq's 8,000 Tokens Per Minute (TPM) limit across rapid multi-method generation.
+-   Managing reasoning token consumption with `openai/gpt-oss-120b` to avoid response truncation.
+-   Ensuring seamless two-way synchronization between click-to-edit badges and dependency tables.
+-   Indexing and fuzzy searching large 100,000+ row CSV datasets efficiently in the browser.
 
 ------------------------------------------------------------------------
 
 # Learning Outcomes
 
--   React development.
--   Resume processing.
--   Context API state management.
--   Data visualization.
--   Frontend persistence.
+-   Agentic task decomposition and prompt engineering design patterns.
+-   Implementation of the formal ISAA instruction classification protocol.
+-   Round-robin multi-key balancing and rate-limit resilience.
+-   High-performance client-side fuzzy search and data streaming.
+-   Dual-paradigm sequential vs. parallel comparative analysis.
 
 ------------------------------------------------------------------------
 
 # Deployment
 
 Supported platforms: 
-- Vercel
+- Vercel: https://mira-ai-agent-web.vercel.app
+- Firebase Hosting: https://mira-ai-agent.web.app
 - Netlify
 - GitHub Pages
-- Cloudflare Pages
 
 ------------------------------------------------------------------------
