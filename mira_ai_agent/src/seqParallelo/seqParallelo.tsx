@@ -19,12 +19,17 @@ interface IterativeResults {
 
 const getBadgeColor = (type: string) => {
   const lower = (type || '').toLowerCase();
-  if (lower.includes('simple')) return 'bg-blue-100 text-blue-800 border-blue-200';
-  if (lower.includes('purpose') || lower.includes('goal')) return 'bg-purple-100 text-purple-800 border-purple-200';
-  if (lower.includes('sequence') || lower.includes('sequential') || lower.includes('then')) return 'bg-amber-100 text-amber-800 border-amber-200';
-  if (lower.includes('exclusive') || lower.includes('or')) return 'bg-emerald-100 text-emerald-800 border-emerald-200';
-  if (lower.includes('mandatory') || lower.includes('and')) return 'bg-red-100 text-red-800 border-red-200';
-  return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+  if (lower.includes('simple')) return 'bg-blue-100 text-blue-800 border-blue-300';
+  if (lower.includes('purpose') || lower.includes('goal')) return 'bg-purple-100 text-purple-800 border-purple-300';
+  if (lower.includes('sequence') || lower.includes('sequential') || lower.includes('then')) return 'bg-amber-100 text-amber-800 border-amber-300';
+  if (lower.includes('exclusive') || lower.includes('or')) return 'bg-emerald-100 text-emerald-800 border-emerald-300';
+  if (lower.includes('mandatory') || lower.includes('and')) return 'bg-red-100 text-red-800 border-red-300';
+  return 'bg-indigo-100 text-indigo-800 border-indigo-300';
+};
+
+const makeBadgeHtml = (stepNum: number, activeType: string, labelPrefix: string = 'Type: ') => {
+  const badgeColor = getBadgeColor(activeType);
+  return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${badgeColor} border shadow-xs cursor-pointer hover:ring-2 hover:ring-blue-400 hover:scale-[1.02] transition-all my-1 select-none" data-edit-step="${stepNum}" data-current-type="${activeType}" title="Click to edit instruction type">${labelPrefix}<span class="underline decoration-dotted underline-offset-2 font-bold">${activeType}</span> <svg class="w-3.5 h-3.5 ml-0.5 inline opacity-80 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></span>`;
 };
 
 const enhanceHtmlWithTypeBadges = (
@@ -33,40 +38,54 @@ const enhanceHtmlWithTypeBadges = (
 ): string => {
   let stepCounter = 0;
 
-  // Match list items in ol/ul to add custom edit badge next to Type
-  const transformed = html.replace(/<li>([\s\S]*?)<\/li>/gi, (match, inner) => {
-    stepCounter++;
-    const stepNum = stepCounter;
+  // 1. Replace in list items (li) or paragraphs (p)
+  let transformed = html.replace(/(<li>|<p[^>]*>)([\s\S]*?)(<\/li>|<\/p>)/gi, (match, openTag, inner, closeTag) => {
+    // A. Check for "Type: [Instruction Type]"
     const typeMatch = inner.match(/(Type:\s*)([^\n<]+)/i);
-    if (!typeMatch) return match;
+    if (typeMatch) {
+      stepCounter++;
+      const stepNum = stepCounter;
+      const originalType = typeMatch[2].trim();
+      const activeType = customTypes[stepNum] || originalType;
+      const badge = makeBadgeHtml(stepNum, activeType, 'Type: ');
+      const newInner = inner.replace(/(Type:\s*)([^\n<]+)/i, badge);
+      return `${openTag}${newInner}${closeTag}`;
+    }
 
-    const originalType = typeMatch[2].trim();
-    const activeType = customTypes[stepNum] || originalType;
-    const badgeColor = getBadgeColor(activeType);
+    // B. Check for arrow syntax: "→ [Instruction Type]" or "-> [Instruction Type]"
+    const arrowMatch = inner.match(/([→\->—–]\s*)([A-Za-z0-9\s-]+Instruction)/i);
+    if (arrowMatch) {
+      stepCounter++;
+      const stepNum = stepCounter;
+      const originalType = arrowMatch[2].trim();
+      const activeType = customTypes[stepNum] || originalType;
+      const badge = makeBadgeHtml(stepNum, activeType, '→ ');
+      const newInner = inner.replace(/([→\->—–]\s*)([A-Za-z0-9\s-]+Instruction)/i, badge);
+      return `${openTag}${newInner}${closeTag}`;
+    }
 
-    const badgeHtml = `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${badgeColor} border cursor-pointer hover:opacity-90 hover:scale-[1.02] transition-all shadow-xs my-0.5 select-none" data-edit-step="${stepNum}" data-current-type="${activeType}" title="Click to edit instruction type">Type: <span class="underline decoration-dotted underline-offset-2">${activeType}</span> <svg class="w-3 h-3 ml-0.5 inline opacity-75 pointer-events-none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></span>`;
-
-    const replacedInner = inner.replace(/(Type:\s*)([^\n<]+)/i, badgeHtml);
-    return `<li>${replacedInner}</li>`;
+    return match;
   });
 
-  // Synchronize changes to Dependency Table rows
-  if (Object.keys(customTypes).length > 0) {
-    return transformed.replace(/<tr[^>]*>([\s\S]*?)<\/tr>/gi, (trMatch, trInner) => {
-      const tdMatches = [...trInner.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)];
-      if (tdMatches.length >= 4) {
-        const stepText = tdMatches[0][1].replace(/<[^>]+>/g, '').trim();
-        const stepNum = parseInt(stepText, 10);
-        if (!isNaN(stepNum) && customTypes[stepNum]) {
-          const newType = customTypes[stepNum];
-          const fourthTd = tdMatches[3][0];
-          const newFourthTd = fourthTd.replace(/>[\s\S]*?<\/td>/i, `>${newType}</td>`);
-          return trMatch.replace(fourthTd, newFourthTd);
-        }
+  // 2. Also enhance Dependency Table rows with editable badges
+  transformed = transformed.replace(/<tr[^>]*>([\s\S]*?)<\/tr>/gi, (trMatch, trInner) => {
+    const tdMatches = [...trInner.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)];
+    if (tdMatches.length >= 4) {
+      const stepText = tdMatches[0][1].replace(/<[^>]+>/g, '').trim();
+      const stepNum = parseInt(stepText, 10);
+      const classCell = tdMatches[3][1].replace(/<[^>]+>/g, '').trim();
+
+      const isInstructionType = /(Simple|Purpose|Sequence|Sequential|Exclusive|Mandatory|Reason|Goal)\s*Instruction/i.test(classCell);
+      if (isInstructionType || (!isNaN(stepNum) && customTypes[stepNum])) {
+        const activeType = (!isNaN(stepNum) && customTypes[stepNum]) || classCell;
+        const badge = makeBadgeHtml(!isNaN(stepNum) ? stepNum : 0, activeType, '');
+        const fourthTd = tdMatches[3][0];
+        const newFourthTd = fourthTd.replace(/>[\s\S]*?<\/td>/i, `>${badge}</td>`);
+        return trMatch.replace(fourthTd, newFourthTd);
       }
-      return trMatch;
-    });
-  }
+    }
+    return trMatch;
+  });
 
   return transformed;
 };
