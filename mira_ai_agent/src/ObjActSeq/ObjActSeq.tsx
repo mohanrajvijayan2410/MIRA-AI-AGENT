@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Database, Search as SearchIcon } from "lucide-react";
+import { Database } from "lucide-react";
 import { CSVUploader } from "../components/CSVUploader";
 import { SearchBox } from "../components/SearchBox";
 import { ResultsTable, TaskDetails } from "../components/ResultsTable";
@@ -9,7 +9,7 @@ import { CSVRow, SearchResult } from "../types";
 import { generateDurationEstimate } from "./aiProviders";
 
 
-const allTasksCsvUrl = new URL("./dataset/Generic_Admin_Tasks_60_rows_.csv", import.meta.url)
+const timeArenaTasksCsvUrl = new URL("./dataset/TimeArenaTask.csv", import.meta.url)
 	.href;
 
 const genericAdminTasksCsvUrl = new URL(
@@ -118,12 +118,12 @@ function App() {
 							<div className="space-y-3">
 															<div className="flex flex-wrap gap-2">
 																<a
-																	href={allTasksCsvUrl}
-																	download="Generic_Admin_Tasks_60_rows_.csv"
+																	href={timeArenaTasksCsvUrl}
+																	download="TimeArenaTask.csv"
 																	className="inline-flex items-center gap-1 rounded-md border border-blue-200 bg-white px-3 py-1.5 text-xs font-medium text-blue-700 shadow-sm hover:bg-blue-50"
 																>
 																	<Database className="w-3 h-3" />
-																	<span>Download Generic Tasks dataset</span>
+																	<span>Download TimeArena Tasks dataset</span>
 																</a>
 																<a
 																	href={genericAdminTasksCsvUrl}

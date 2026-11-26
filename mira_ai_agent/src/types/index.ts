@@ -8,7 +8,7 @@ export interface CSVRow {
 export interface SearchResult {
   item: CSVRow;
   score?: number;
-  matches?: any[];
+  matches?: readonly any[];
   instructions?: string;
 }
 

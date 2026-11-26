@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, Copy, CheckCircle, Clock, ArrowRight, CheckSquare, AlertCircle, GitCompare } from 'lucide-react';
+import { Copy, CheckCircle, Clock, CheckSquare, AlertCircle, GitCompare } from 'lucide-react';
 import { PlanRenderer } from './PlanRenderer';
 import { ComparisonTable } from './ComparisonTable';
 import { ComparisonResult, IterativeMethodResponse, FeatureComparisonResult } from '../types';
@@ -98,7 +98,6 @@ export const OutputDisplay: React.FC<OutputDisplayProps> = ({
   
 
   const isComparison = !!comparisonResult || !!featureComparison;
-  const isIterative = !!iterativeResponse;
   
   let displayTitle = 'Generated Execution Plan';
   if (featureComparison) displayTitle = 'Feature Comparison Results';
@@ -111,8 +110,11 @@ export const OutputDisplay: React.FC<OutputDisplayProps> = ({
     <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-gray-200 shadow-lg overflow-hidden">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200 gap-3 sm:gap-0">
         <div className="flex items-center gap-3">
-    
+          <div className="p-2 bg-blue-100 rounded-lg text-blue-600">
+            {React.createElement(displayIcon, { className: "w-5 h-5" })}
+          </div>
           <div>
+            <h3 className="font-semibold text-gray-900 text-sm sm:base">{displayTitle}</h3>
             <div className="text-xs text-gray-600 flex items-center gap-1">
               <Clock className="w-3 h-3" />
               {new Date().toLocaleString()}

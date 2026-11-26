@@ -18,7 +18,7 @@ function App() {
 								<Bot className="w-6 h-6 text-blue-600" />
 							</div>
 							<h1 className="text-xl md:text-2xl font-bold text-gray-900 leading-tight">
-								ISAA
+								Instruction Sequencing AI Agent - ISAA
 							</h1>
 						</div>
 

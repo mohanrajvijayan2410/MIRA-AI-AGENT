@@ -4,10 +4,8 @@ import {
   Shuffle, 
   Clock, 
   CheckCircle2, 
-  GitBranch,
   Zap,
   BarChart3,
-  Target,
   Timer,
   Network
 } from 'lucide-react';

@@ -183,21 +183,18 @@ function Chat() {
 						{messages.map((message) => (
 							<div
 								key={message.id}
-								className={`flex ${
-									message.type === "user" ? "justify-end" : "justify-start"
-								}`}
+								className={`flex ${message.type === "user" ? "justify-end" : "justify-start"
+									}`}
 							>
 								<div
-									className={`flex items-start space-x-3 max-w-2xl ${
-										message.type === "user"
+									className={`flex items-start space-x-3 max-w-2xl ${message.type === "user"
 											? "flex-row-reverse space-x-reverse"
 											: ""
-									}`}
+										}`}
 								>
 									<div
-										className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-											message.type === "user" ? "bg-blue-500" : ""
-										}`}
+										className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${message.type === "user" ? "bg-blue-500" : ""
+											}`}
 									>
 										{message.type === "user" ? (
 											<User className="w-4 h-4 text-white" />
@@ -211,11 +208,10 @@ function Chat() {
 										</div>
 									</div>
 									<div
-										className={`rounded-lg p-4 shadow-sm ${
-											message.type === "user"
+										className={`rounded-lg p-4 shadow-sm ${message.type === "user"
 												? "bg-blue-500 text-white"
 												: "bg-white text-gray-800 border border-gray-200"
-										}`}
+											}`}
 									>
 										{message.type === "bot" ? (
 											<div
@@ -245,11 +241,10 @@ function Chat() {
 									<div
 										className="bg-blue-500 h-2 rounded-full transition-all duration-300"
 										style={{
-											width: `${
-												((currentReviewIndex + 1) /
+											width: `${((currentReviewIndex + 1) /
 													currentInstructions.length) *
 												100
-											}%`,
+												}%`,
 										}}
 									></div>
 								</div>
@@ -455,7 +450,7 @@ function Chat() {
 							value={inputValue}
 							onChange={(e) => setInputValue(e.target.value)}
 							onKeyPress={handleKeyPress}
-							placeholder="Enter your instruction (e.g., 'All Computers in CommonLab, has grounding issue.')"
+							placeholder="Enter your instruction (e.g., 'Verify UPS and approve switches in the laboratory.')"
 							className="w-full p-3 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-white shadow-sm"
 							rows="1"
 							disabled={isLoading || reviewMode}

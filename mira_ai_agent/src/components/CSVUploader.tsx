@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { Upload, FileText, CheckCircle, AlertCircle, X } from "lucide-react";
+import { Upload, CheckCircle, AlertCircle, X } from "lucide-react";
 import { parseCSV } from "../ObjActSeq/csvParser";
 import { CSVRow, UploadState } from "../types";
 

@@ -474,22 +474,6 @@ Task: "${task}"
 		return this.makeApiCall(prompt);
 	}
 
-	private parseJsonResponse<T>(response: string): T {
-		try {
-			// Try to extract JSON from the response
-			const jsonMatch = response.match(/\{[\s\S]*\}/);
-			if (jsonMatch) {
-				return JSON.parse(jsonMatch[0]);
-			}
-
-			// If no JSON found, try parsing the entire response
-			return JSON.parse(response);
-		} catch (error) {
-			console.error("Failed to parse JSON response:", error);
-			throw new Error("Invalid JSON response from API");
-		}
-	}
-
 	private async makeApiCall(prompt: string, maxRetries = 2): Promise<string> {
 		const models = [
 			"openai/gpt-oss-120b",
